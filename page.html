@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container-fluid">
+  <h1>Ya me cansé, por eso propongo</h1>
+  <div class="row">
+    <center>
+      {% for navlink in navlinks%}
+        <a href="/{{navlink.url}}" class="btn btn-default {{navlink.extra}}" role="button" >{{navlink.text}}</a> 
+      {% endfor %}
+    </center>
+  </div>
+  <div class="row">
+    {% for postcard_image in postcard_images %}
+      <div class="col-lg-3 col-md-6 col-sm-6 col-xm-6" style="background-color:black;">
+          <a href="{{postcard_image.url}}" >
+            <img src="{{postcard_image.url}}" class="thumbnail img-responsive">
+          </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>

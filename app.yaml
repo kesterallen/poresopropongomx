@@ -1,0 +1,19 @@
+application: poresopropongomx
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /thumbnails
+  static_dir: thumbnails
+- url: /images
+  static_dir: images
+- url: /.*
+  script: view_webapp.app
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
