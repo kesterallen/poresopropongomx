@@ -170,13 +170,9 @@ class ViewGalleryHandler(object):
 
             self.postcard_images.append(postcard_image)
 
-    def get_page(self, num_images_display):
-        renderer = Renderer(view=self)
-        #self.response.write(renderer.render())
-        print "Content-type:text/html\n", renderer.render()
-
     def get(self):
-        self.get_page(DEFAULT_NUM_IMAGES)
+        renderer = Renderer(view=self)
+        print "Content-type:text/html\n", renderer.render()
 
     def __init__(self,
                  offset=None,
@@ -190,9 +186,6 @@ class ViewGalleryHandler(object):
 
 class ViewCardHandler(ViewGalleryHandler):
     """The view handler for a single card."""
-    def get(self, num_images_display=None):
-        self.get_page(DEFAULT_NUM_IMAGES_ONE_CARD)
-
     def __init__(self,
                  offset=None,
                  num_images_display=DEFAULT_NUM_IMAGES_ONE_CARD):
