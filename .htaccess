@@ -1,4 +1,6 @@
 RewriteEngine On
+RewriteRule    ^img/?$            cgi-bin/view.py?type=img [NC,L]
+RewriteRule    ^img/(\d+)$        cgi-bin/view.py?type=img&offset=$1 [NC,L]
 RewriteRule    ^card/?$           cgi-bin/view.py?type=card [NC,L]
 RewriteRule    ^card/(\d+)$       cgi-bin/view.py?type=card&offset=$1 [NC,L]
 RewriteRule    ^/?$               cgi-bin/view.py?type=view [NC,L]

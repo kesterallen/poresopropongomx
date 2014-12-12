@@ -7,12 +7,14 @@ import cgi
 import cgitb; cgitb.enable()
 from renderer import Renderer
 
-NUM_IMAGES_MINIMUM = 2
+NUM_IMAGES_MINIMUM = 1
 DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
-PERMALINK_URL_TEMPLATE = 'http://poresopropongo.mx/%s'
-IMAGE_URL_TEMPLATE = '/images/%s'
+IMAGE_FILE_LOCATION_TEMPLATE = '/images/%s'
+
+PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
+IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
 IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
@@ -40,8 +42,8 @@ class ViewGalleryHandler(object):
         except (ValueError, TypeError) as err:
             logging.info("Error converting num_images_display: %s", err)
             num_images_display = DEFAULT_NUM_IMAGES
-        if num_images_display % 2 == 1:
-            num_images_display -= 1
+        #if num_images_display % 2 == 1:
+            #num_images_display -= 1
         if num_images_display < 1:
             num_images_display = NUM_IMAGES_MINIMUM
         self.num_images_display = num_images_display
@@ -57,8 +59,8 @@ class ViewGalleryHandler(object):
             offset = 0
         if offset > self.max_good_display_offset:
             offset = self.max_good_display_offset
-        if offset % 2 == 1:
-            offset -= 1
+        #if offset % 2 == 1:
+            #offset -= 1
         self.offset = offset
 
         # Load the image_indices:
@@ -105,6 +107,7 @@ class ViewGalleryHandler(object):
         try:
             with open(IMAGE_LIST_FILE) as img_file:
                 image_names = img_file.read().splitlines()
+                image_names = [i.split('/')[-1] for i in image_names]
             logging.info("Read image list file, using its data")
         except IOError as ioe:
             logging.error("Error reading image list file, doing ls: %s", ioe)
@@ -183,19 +186,21 @@ class ViewGalleryHandler(object):
             image = self.image_names[i]
             postcard_image = {
                 'name': image,
-                'img_src': IMAGE_URL_TEMPLATE % image,
+                'img_src': IMAGE_FILE_LOCATION_TEMPLATE % image,
             }
-            if self.is_single:
-                postcard_image['href'] = IMAGE_URL_TEMPLATE % image
-            else:
+            if self.num_images_display == 1: # single image
+                postcard_image['href'] = '#'
+            if self.num_images_display == 2: # single postcard -- two images (front and back)
+                postcard_image['href'] = IMAGE_URL_TEMPLATE % i#image
+            else: # gallery
                 postcard_image['href'] = CARD_URL_TEMPLATE % i
 
             self.postcard_images.append(postcard_image)
 
     @property
     def permalink(self):
-        """Generate a permanent link for this gallery page."""
-        return PERMALINK_URL_TEMPLATE % self.offset
+        """Generate a permanent link for gallery page."""
+        return PERMALINK_TEMPLATE % self.permalink_suffix
 
     def get(self):
         """Handle a GET request for the page."""
@@ -204,8 +209,8 @@ class ViewGalleryHandler(object):
 
     def __init__(self,
                  offset=None,
-                 num_images_display=DEFAULT_NUM_IMAGES,
-                 is_single=False):
+                 num_images_display=DEFAULT_NUM_IMAGES,):
+                 #is_single=False):
 
         # Init member vars here to make pylint happy.
         self.image_names = None
@@ -217,27 +222,34 @@ class ViewGalleryHandler(object):
         self.num_images_display = None
 
         # Load data.
-        self.is_single = is_single
+        #self.is_single = is_single
         self.load_images()
         self.load_indices(offset, num_images_display)
         self.load_navlinks()
         self.load_postcards()
+        self.permalink_suffix = self.offset
 
 class ViewCardHandler(ViewGalleryHandler):
-    @property
-    def permalink(self):
-        """Generate a permanent link for this page."""
-        card_permalink = "card/%s" % self.offset
-        return PERMALINK_URL_TEMPLATE % card_permalink
-
     """The view handler for a single card."""
     def __init__(self,
                  offset=None,
                  num_images_display=DEFAULT_NUM_IMAGES_ONE_CARD):
         """Passthrough with is_single set for card views."""
         super(ViewCardHandler, self).__init__(offset,
-                                              num_images_display,
-                                              is_single=True)
+                                              num_images_display,)
+                                              #is_single=True)
+        self.permalink_suffix = "card/%s" % self.offset
+
+class ViewImageHandler(ViewGalleryHandler):
+    """The view handler for a single image (one side of a postcard)."""
+    def __init__(self,
+                 offset=None,
+                 num_images_display=1):
+        """Passthrough with is_single set for card views."""
+        super(ViewImageHandler, self).__init__(offset,
+                                              num_images_display,)
+                                              #is_single=True)
+        self.permalink_suffix = "image/%s" % self.offset
 
 def main():
     """Page view entry point."""
@@ -248,6 +260,8 @@ def main():
 
     if view_type == 'card':
         view_handler = ViewCardHandler(offset)
+    elif view_type == 'img':
+        view_handler = ViewImageHandler(offset)
     else:
         view_handler = ViewGalleryHandler(offset)
 

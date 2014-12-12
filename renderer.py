@@ -67,6 +67,7 @@ PAGE_TEMPLATE = """
     }
     .navbar {
       min-height:140px !important
+      max-height:140px ! might work
     }
   </style>
 </head>
@@ -101,9 +102,11 @@ class Renderer(object):
     def __init__(self, view):
         """Set up the view CSS."""
         self.view = view
-        if self.view.is_single:
+        if self.view.num_images_display == 1: # single image
+            sizes = [12, 12, 12, 12]
+        elif self.view.num_images_display == 2: # card
             sizes = [6, 12, 12, 12]
-        else:
+        else: # gallery
             sizes = [3, 6, 6, 6]
         self.img_css = ('    <div class="col-lg-%s '
                                         'col-md-%s '
@@ -115,9 +118,9 @@ class Renderer(object):
     def render_navlinks(self):
         """Render the navlinks' HTML in bootstrap style and return the text.
         Skip if the view is a single card."""
-        # Skip if this is a single card:
+        # Skip if this is a single image, or a single card:
         #
-        if self.view.is_single:
+        if self.view.num_images_display <= 2:
             return ""
 
         navlinks_html = ['    <ul class="pagination">']
