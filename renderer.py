@@ -25,7 +25,7 @@ NAVBAR_HTML = """
           <li><a href="/">Postales enviadas</a></li>
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
-          <li><a href="/about.html#contact">Contacto</a></li>
+          <li><a href="/contact.html">Contacto</a></li>
           <li>%s</li>
         </ul>
       </div><!--/.nav-collapse -->

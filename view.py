@@ -4,7 +4,7 @@
 import logging
 import os
 import cgi
-#import cgitb; cgitb.enable()
+import cgitb; cgitb.enable()
 from renderer import Renderer
 
 NUM_IMAGES_MINIMUM = 2
@@ -36,7 +36,7 @@ class ViewGalleryHandler(object):
         #
         try:
             num_images_display = int(float(num_images_display))
-        except ValueError as err:
+        except (ValueError, TypeError) as err:
             logging.info("Error converting num_images_display: %s", err)
             num_images_display = DEFAULT_NUM_IMAGES
         if num_images_display % 2 == 1:
@@ -49,7 +49,7 @@ class ViewGalleryHandler(object):
         #
         try:
             offset = int(float(offset))
-        except ValueError as err:
+        except (ValueError, TypeError) as err:
             logging.info("Error converting offset: %s", err)
             offset = self.max_good_display_offset
         if offset < 0:
@@ -106,7 +106,7 @@ class ViewGalleryHandler(object):
                 image_names = img_file.read().splitlines()
             logging.info("Read image list file, using its data")
         except IOError as ioe:
-            logging.info("Error reading image list file, doing ls: %s", ioe)
+            logging.error("Error reading image list file, doing ls: %s", ioe)
             image_names = os.listdir('../images')
         image_names = [f for f in image_names
                           if f.lower().endswith('png') and f != 'logo.png']
@@ -200,6 +200,8 @@ class ViewGalleryHandler(object):
                  offset=None,
                  num_images_display=DEFAULT_NUM_IMAGES,
                  is_single=False):
+
+        # Init member vars here to make pylint happy.
         self.image_names = None
         self.postcard_images = None
         self.image_indices = None
@@ -208,6 +210,7 @@ class ViewGalleryHandler(object):
         self.num_images = None
         self.num_images_display = None
 
+        # Load data.
         self.is_single = is_single
         self.load_images()
         self.load_indices(offset, num_images_display)
