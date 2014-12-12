@@ -11,6 +11,7 @@ NUM_IMAGES_MINIMUM = 2
 DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
+PERMALINK_URL_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/images/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
@@ -191,6 +192,11 @@ class ViewGalleryHandler(object):
 
             self.postcard_images.append(postcard_image)
 
+    @property
+    def permalink(self):
+        """Generate a permanent link for this gallery page."""
+        return PERMALINK_URL_TEMPLATE % self.offset
+
     def get(self):
         """Handle a GET request for the page."""
         renderer = Renderer(view=self)
@@ -218,6 +224,12 @@ class ViewGalleryHandler(object):
         self.load_postcards()
 
 class ViewCardHandler(ViewGalleryHandler):
+    @property
+    def permalink(self):
+        """Generate a permanent link for this page."""
+        card_permalink = "card/%s" % self.offset
+        return PERMALINK_URL_TEMPLATE % card_permalink
+
     """The view handler for a single card."""
     def __init__(self,
                  offset=None,

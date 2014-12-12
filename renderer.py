@@ -26,7 +26,22 @@ NAVBAR_HTML = """
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
-          <li>%s</li>
+          <li>%s</li> <!-- navlinks -->
+          <li>
+            <div class="fb-share-button"
+                 data-href="%s"
+                 data-layout="button_count">
+            </div>
+          </li>
+          <li>
+            <a href="https://twitter.com/share" 
+              class="twitter-share-button" 
+              data-url="%s"
+              data-text="#YaMeCansé #PorEsoPropongo"
+              data-dnt="true"
+            >Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </li>
         </ul>
       </div><!--/.nav-collapse -->
 
@@ -57,6 +72,16 @@ PAGE_TEMPLATE = """
 </head>
 
 <body role="document">
+<!-- Hook for FB Share button-->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 <div class="container-fluid">
 """ + NAVBAR_HTML + """
   <div class="row">
@@ -133,5 +158,9 @@ class Renderer(object):
         """Render the page and return the text."""
         navlinks = self.render_navlinks() if render_navlinks else ""
         postcards = self.render_postcards()
-        return PAGE_TEMPLATE % (navlinks, postcards)
-
+        return PAGE_TEMPLATE % (
+                    navlinks,
+                    self.view.permalink,
+                    self.view.permalink,
+                    postcards,
+               )
