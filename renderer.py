@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+"""Render template class"""
 
 NAVBAR_HTML = """
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
-        <button type="button" 
+        <button type="button"
                 class="navbar-toggle collapsed"
                 data-toggle="collapse"
                 data-target=".navbar-collapse">
@@ -14,8 +15,8 @@ NAVBAR_HTML = """
           <span class="icon-bar"></span>
         </button>
         <a class="pull-left" href="/">
-          <img alt="Ya Me Cansé Por Eso Propongo" 
-               src="/logo.png" 
+          <img alt="Ya Me Cansé Por Eso Propongo"
+               src="/logo.png"
                width="300px" />
         </a>
       </div>
@@ -42,11 +43,11 @@ PAGE_TEMPLATE = """
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/bootstrap-3.2.0.min.css">
   <style>
-    body { 
+    body {
       padding-top: 150px;
     }
     .navbar-nav > li > a {
-      padding-top:25px !important; 
+      padding-top:25px !important;
       padding-bottom:25px !important;
     }
     .navbar {

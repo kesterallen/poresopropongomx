@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+"""View class"""
 
 import logging
 import os
 import cgi
-import cgitb; cgitb.enable()
+#import cgitb; cgitb.enable()
 from renderer import Renderer
 
 NUM_IMAGES_MINIMUM = 2
@@ -12,6 +13,8 @@ DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
 IMAGE_URL_TEMPLATE = '/images/%s'
 CARD_URL_TEMPLATE = '/card/%s'
+
+IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
@@ -33,7 +36,8 @@ class ViewGalleryHandler(object):
         #
         try:
             num_images_display = int(float(num_images_display))
-        except:
+        except ValueError as err:
+            logging.info("Error converting num_images_display: %s", err)
             num_images_display = DEFAULT_NUM_IMAGES
         if num_images_display % 2 == 1:
             num_images_display -= 1
@@ -45,7 +49,8 @@ class ViewGalleryHandler(object):
         #
         try:
             offset = int(float(offset))
-        except:
+        except ValueError as err:
+            logging.info("Error converting offset: %s", err)
             offset = self.max_good_display_offset
         if offset < 0:
             offset = 0
@@ -93,8 +98,18 @@ class ViewGalleryHandler(object):
     def load_images(self):
         """Load the image names, and set self.num_images."""
 
-        image_names = [f for f in os.listdir('../images') 
-                           if f.endswith('png') and f != 'logo.png']
+        # Load the image list from the pre-generated file, if it exists,
+        # otherwise disk-scan it.
+        #
+        try:
+            with open(IMAGE_LIST_FILE) as img_file:
+                image_names = img_file.read().splitlines()
+            logging.info("Read image list file, using its data")
+        except IOError as ioe:
+            logging.info("Error reading image list file, doing ls: %s", ioe)
+            image_names = os.listdir('../images')
+        image_names = [f for f in image_names
+                          if f.lower().endswith('png') and f != 'logo.png']
 
         self.image_names = sorted(image_names, key=lambda s: s.lower())
         self.num_images = len(self.image_names)
@@ -107,9 +122,14 @@ class ViewGalleryHandler(object):
             self.num_images = len(self.image_names)
 
     def load_navlinks(self):
-        """Generate a " < 1 2 3 ... n-2 n-1 n > " type of navlink set. The '1'
+        """
+        Generate a " < 1 2 3 ... n-2 n-1 n > " type of navlink set. The '1'
         link will go to the oldest set, the n link will go to the newest set.
-        The math in the 'href' definition controls this."""
+        The math in the 'href' definition controls this.
+
+        Note that this math is more awkward than it could be. This is caused
+        by the implicit date-descending sort of self.images.
+        """
 
         self.navlinks = []
 
@@ -126,11 +146,12 @@ class ViewGalleryHandler(object):
 
         for ipage in page_indices:
             is_current_page = (self.num_pages - ipage - 1) == self.image_page
-            is_edge_page = ipage in [page_indices[0],  page_indices[1],
+            is_edge_page = ipage in [page_indices[0], page_indices[1],
                                      page_indices[-2], page_indices[-1],]
             if is_current_page or is_edge_page:
                 navlink = {
-                    'href': (self.num_pages - (ipage+1)) * self.num_images_display,
+                    'href': (self.num_pages - (ipage+1)) * \
+                                self.num_images_display,
                     'text': '%s' % (ipage+1),
                     'active': '',
                 }
@@ -152,8 +173,8 @@ class ViewGalleryHandler(object):
                 {'href': prev_offset, 'text': '&raquo;', 'active': ''})
 
     def load_postcards(self):
-        """If the gallery is being displayed, the link should go to a 
-        single-card view. If a single card is being displayed, the 
+        """If the gallery is being displayed, the link should go to a
+        single-card view. If a single card is being displayed, the
         link should go to the image."""
 
         self.postcard_images = []
@@ -171,6 +192,7 @@ class ViewGalleryHandler(object):
             self.postcard_images.append(postcard_image)
 
     def get(self):
+        """Handle a GET request for the page."""
         renderer = Renderer(view=self)
         print "Content-type:text/html\n", renderer.render()
 
@@ -178,6 +200,14 @@ class ViewGalleryHandler(object):
                  offset=None,
                  num_images_display=DEFAULT_NUM_IMAGES,
                  is_single=False):
+        self.image_names = None
+        self.postcard_images = None
+        self.image_indices = None
+        self.offset = None
+        self.navlinks = None
+        self.num_images = None
+        self.num_images_display = None
+
         self.is_single = is_single
         self.load_images()
         self.load_indices(offset, num_images_display)
@@ -189,21 +219,13 @@ class ViewCardHandler(ViewGalleryHandler):
     def __init__(self,
                  offset=None,
                  num_images_display=DEFAULT_NUM_IMAGES_ONE_CARD):
+        """Passthrough with is_single set for card views."""
         super(ViewCardHandler, self).__init__(offset,
                                               num_images_display,
                                               is_single=True)
 
-def handle_404(request, response, exception):
-    """Page not found handler"""
-    logging.exception(exception)
-    print 'Page not found. Error is "%s"' % exception
-
-def handle_500(request, response, exception):
-    """Server error handler"""
-    logging.exception(exception)
-    print 'A server error occurred!'
-
 def main():
+    """Page view entry point."""
     args = cgi.FieldStorage()
 
     view_type = args['type'].value if 'type' in args else 'gallery'
