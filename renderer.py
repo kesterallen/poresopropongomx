@@ -14,6 +14,7 @@ NAVBAR_HTML = """
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
+
         <a class="pull-left" href="/">
           <img alt="Ya Me Cansé Por Eso Propongo"
                src="/logo.png"
@@ -21,27 +22,26 @@ NAVBAR_HTML = """
         </a>
       </div>
       <div class="navbar-collapse collapse">
+
+        <!-- Social media buttons-->
+        <div class="fb-share-button"
+             data-href="%s"
+             data-layout="button_count">
+        </div>
+        <a href="https://twitter.com/share" 
+          class="twitter-share-button" 
+          data-url="%s"
+          data-text="#YaMeCansé #PorEsoPropongo"
+          data-dnt="true"
+        >Tweet</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>%s</li> <!-- navlinks -->
-          <li>
-            <div class="fb-share-button"
-                 data-href="%s"
-                 data-layout="button_count">
-            </div>
-          </li>
-          <li>
-            <a href="https://twitter.com/share" 
-              class="twitter-share-button" 
-              data-url="%s"
-              data-text="#YaMeCansé #PorEsoPropongo"
-              data-dnt="true"
-            >Tweet</a>
-            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-          </li>
         </ul>
       </div><!--/.nav-collapse -->
 
@@ -159,8 +159,8 @@ class Renderer(object):
         navlinks = self.render_navlinks() if render_navlinks else ""
         postcards = self.render_postcards()
         return PAGE_TEMPLATE % (
+                    self.view.permalink,
+                    self.view.permalink,
                     navlinks,
-                    self.view.permalink,
-                    self.view.permalink,
                     postcards,
                )

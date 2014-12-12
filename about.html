@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <script src="/jquery-1.11.1.min.js"></script>
+  <script> $(function(){ $("#static_navbar").load("static_navbar.html"); }); </script> 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/bootstrap-3.2.0.min.css">
   <style>
@@ -18,39 +20,9 @@
   </style>
 </head>
 <body role="document">
+
 <div class="container-fluid">
-
-  <div class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" 
-                class="navbar-toggle collapsed"
-                data-toggle="collapse"
-                data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="pull-left" href="/">
-          <img alt="Ya Me Cansé Por Eso Propongo"
-               src="/logo.png" 
-               width="300px" />
-        </a>
-      </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="/">Postales enviadas</a></li>
-          <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
-          <li><a href="/about.html">¿Por qué proponer?</a></li>
-          <li><a href="/contact.html">Contacto</a></li>
-          <li>
-        </ul>
-      </div><!--/.nav-collapse -->
-
-
-    </div>
-  </div>
+  <div id="static_navbar"></div>
 
   <img class="img-responsive" src="banner.png"/>
 
@@ -127,7 +99,6 @@
 
   <img class="img-responsive" src="banner.png"/>
 </div>
-<script src="/jquery-1.11.1.min.js"></script>
 <script src="/bootstrap-3.2.0.min.js"></script>
 </body>
 </html>
