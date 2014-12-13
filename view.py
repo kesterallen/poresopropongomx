@@ -4,7 +4,7 @@
 import logging
 import os
 import cgi
-import cgitb; cgitb.enable()
+import cgitb
 from renderer import Renderer
 
 NUM_IMAGES_MINIMUM = 1
@@ -59,8 +59,8 @@ class ViewGalleryHandler(object):
             offset = 0
         if offset > self.max_good_display_offset:
             offset = self.max_good_display_offset
-        #if offset % 2 == 1:
-            #offset -= 1
+        if offset % 2 == 1 and self.num_images_display != 1:
+            offset -= 1
         self.offset = offset
 
         # Load the image_indices:
@@ -190,8 +190,9 @@ class ViewGalleryHandler(object):
             }
             if self.num_images_display == 1: # single image
                 postcard_image['href'] = '#'
-            if self.num_images_display == 2: # single postcard -- two images (front and back)
-                postcard_image['href'] = IMAGE_URL_TEMPLATE % i#image
+            if self.num_images_display == 2: # single postcard --
+                                             # two images (front and back)
+                postcard_image['href'] = IMAGE_URL_TEMPLATE % i
             else: # gallery
                 postcard_image['href'] = CARD_URL_TEMPLATE % i
 
@@ -209,8 +210,7 @@ class ViewGalleryHandler(object):
 
     def __init__(self,
                  offset=None,
-                 num_images_display=DEFAULT_NUM_IMAGES,):
-                 #is_single=False):
+                 num_images_display=DEFAULT_NUM_IMAGES):
 
         # Init member vars here to make pylint happy.
         self.image_names = None
@@ -222,7 +222,6 @@ class ViewGalleryHandler(object):
         self.num_images_display = None
 
         # Load data.
-        #self.is_single = is_single
         self.load_images()
         self.load_indices(offset, num_images_display)
         self.load_navlinks()
@@ -234,10 +233,9 @@ class ViewCardHandler(ViewGalleryHandler):
     def __init__(self,
                  offset=None,
                  num_images_display=DEFAULT_NUM_IMAGES_ONE_CARD):
-        """Passthrough with is_single set for card views."""
+        """Passthrough with num_images_display set for card views."""
         super(ViewCardHandler, self).__init__(offset,
-                                              num_images_display,)
-                                              #is_single=True)
+                                              num_images_display)
         self.permalink_suffix = "card/%s" % self.offset
 
 class ViewImageHandler(ViewGalleryHandler):
@@ -245,27 +243,32 @@ class ViewImageHandler(ViewGalleryHandler):
     def __init__(self,
                  offset=None,
                  num_images_display=1):
-        """Passthrough with is_single set for card views."""
+        """Passthrough with num_images_display set for single image views."""
         super(ViewImageHandler, self).__init__(offset,
-                                              num_images_display,)
-                                              #is_single=True)
+                                              num_images_display)
         self.permalink_suffix = "image/%s" % self.offset
 
 def main():
     """Page view entry point."""
-    args = cgi.FieldStorage()
+    cgitb.enable()
 
-    view_type = args['type'].value if 'type' in args else 'gallery'
-    offset = args['offset'].value if 'offset' in args else None
+    try:
+        args = cgi.FieldStorage()
 
-    if view_type == 'card':
-        view_handler = ViewCardHandler(offset)
-    elif view_type == 'img':
-        view_handler = ViewImageHandler(offset)
-    else:
-        view_handler = ViewGalleryHandler(offset)
+        view_type = args['type'].value if 'type' in args else 'gallery'
+        offset = args['offset'].value if 'offset' in args else None
 
-    view_handler.get()
+        if view_type == 'card':
+            view_handler = ViewCardHandler(offset)
+        elif view_type == 'img':
+            view_handler = ViewImageHandler(offset)
+        else:
+            view_handler = ViewGalleryHandler(offset)
+
+        view_handler.get()
+    except:
+        print "Status: 500"
+        cgitb.handler()
 
 if __name__ == "__main__":
     main()
