@@ -1,6 +1,22 @@
 # -*- coding: utf-8 -*-
 """Render template class"""
 
+SM_METADATA_TEMPLATE = """
+  <!-- Twitter card -->
+  <meta name="twitter:card"        content="photo"/>
+  <meta name="twitter:site"        content="@poresopropongo"/>
+  <meta name="twitter:creator"     content="@poresopropongo"/>
+  <meta name="twitter:url"         content="%s"/>
+  <meta name="twitter:image"       content="http://poresopropongo.mx/%s"/>
+  
+  <!-- Facebook preview-->
+  <meta property="og:type"         content="blog"/> 
+  <meta property="og:site_name"    content="Por Eso Propongo"/> 
+  <meta property="fb:admins"       content="poresopropongo"/> 
+  <meta property="og:url"          content="%s"/>
+  <meta property="og:image"        content="http://poresopropongo.mx/%s"/>
+"""
+
 NAVBAR_HTML = """
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -23,11 +39,12 @@ NAVBAR_HTML = """
       </div>
       <div class="navbar-collapse collapse">
 
-        <!-- Social media buttons-->
+        <!-- Social media buttons start-->
         <div class="fb-share-button"
              data-href="%s"
              data-layout="button_count">
         </div>
+
         <a href="https://twitter.com/share" 
           class="twitter-share-button" 
           data-url="%s"
@@ -35,6 +52,7 @@ NAVBAR_HTML = """
           data-dnt="true"
         >Tweet</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        <!-- Social media buttons end-->
 
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
@@ -70,6 +88,9 @@ PAGE_TEMPLATE = """
       max-height:140px ! might work
     }
   </style>
+  <!-- social media metadata start -->
+  %s 
+  <!-- social media metadata end -->
 </head>
 
 <body role="document">
@@ -82,11 +103,14 @@ PAGE_TEMPLATE = """
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
+<!-- Hook for FB Share button end-->
 
 <div class="container-fluid">
-""" + NAVBAR_HTML + """
+  %s <!-- navbar -->
   <div class="row">
-%s
+    <!-- postcards start -->
+    %s 
+    <!-- postcards end -->
   </div>
 </div>
 
@@ -141,6 +165,21 @@ class Renderer(object):
         text = "\n".join(navlinks_html)
         return text
 
+    def render_navbar(self):
+        navlinks = self.render_navlinks() if self.view.do_render_navlinks else ""
+        navbar_html = NAVBAR_HTML % (self.view.permalink,
+                                     self.view.permalink,
+                                     navlinks,)
+        return navbar_html
+
+    def render_social_media_metadata(self):
+        sm_metadata_html = SM_METADATA_TEMPLATE % (
+                               self.view.permalink,
+                               self.view.img_url,
+                               self.view.permalink,
+                               self.view.img_url,)
+        return sm_metadata_html
+
     def render_postcards(self):
         """Render the postcards' HTML and return the text."""
         postcards = []
@@ -157,13 +196,10 @@ class Renderer(object):
         text = "\n".join(postcards)
         return text
 
-    def render(self, render_navlinks=True):
+    def render(self):
         """Render the page and return the text."""
-        navlinks = self.render_navlinks() if render_navlinks else ""
+        navbar = self.render_navbar()
         postcards = self.render_postcards()
-        return PAGE_TEMPLATE % (
-                    self.view.permalink,
-                    self.view.permalink,
-                    navlinks,
-                    postcards,
-               )
+        sm_metadata = self.render_social_media_metadata()
+
+        return PAGE_TEMPLATE % (sm_metadata, navbar, postcards,)

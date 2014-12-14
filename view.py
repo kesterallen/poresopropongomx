@@ -5,7 +5,7 @@ import logging
 import os
 import cgi
 import cgitb
-from renderer import Renderer
+from renderer_test import Renderer
 
 NUM_IMAGES_MINIMUM = 1
 DEFAULT_NUM_IMAGES = 100
@@ -132,7 +132,7 @@ class ViewGalleryHandler(object):
         The math in the 'href' definition controls this.
 
         Note that this math is more awkward than it could be. This is caused
-        by the implicit date-descending sort of self.images.
+        by the implicit date-descending sort of self.image_names.
         """
 
         self.navlinks = []
@@ -227,6 +227,8 @@ class ViewGalleryHandler(object):
         self.load_navlinks()
         self.load_postcards()
         self.permalink_suffix = self.offset
+        self.img_url = "images/%s" % self.image_names[self.offset]
+        self.do_render_navlinks = True
 
 class ViewCardHandler(ViewGalleryHandler):
     """The view handler for a single card."""
@@ -237,6 +239,7 @@ class ViewCardHandler(ViewGalleryHandler):
         super(ViewCardHandler, self).__init__(offset,
                                               num_images_display)
         self.permalink_suffix = "card/%s" % self.offset
+        self.do_render_navlinks = False
 
 class ViewImageHandler(ViewGalleryHandler):
     """The view handler for a single image (one side of a postcard)."""
@@ -246,7 +249,17 @@ class ViewImageHandler(ViewGalleryHandler):
         """Passthrough with num_images_display set for single image views."""
         super(ViewImageHandler, self).__init__(offset,
                                               num_images_display)
-        self.permalink_suffix = "image/%s" % self.offset
+        self.permalink_suffix = "img/%s" % self.offset
+
+#class ViewRawHandler(ViewImageHandler):
+#    """The view handler for a single image with no chrome on it."""
+#    def __init__(self,
+#                 offset=None,
+#                 num_images_display=1):
+#        """Passthrough with num_images_display set for single image views."""
+#        super(ViewRawHandler, self).__init__(offset,
+#                                              num_images_display)
+#        self.permalink_suffix = "images/%s" % self.image_names[self.offset]
 
 def main():
     """Page view entry point."""
@@ -262,6 +275,8 @@ def main():
             view_handler = ViewCardHandler(offset)
         elif view_type == 'img':
             view_handler = ViewImageHandler(offset)
+#        elif view_type == 'raw':
+#            view_handler = ViewRawHandler(offset)
         else:
             view_handler = ViewGalleryHandler(offset)
 
