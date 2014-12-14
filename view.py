@@ -5,7 +5,7 @@ import logging
 import os
 import cgi
 import cgitb
-from renderer_test import Renderer
+from renderer import Renderer
 
 NUM_IMAGES_MINIMUM = 1
 DEFAULT_NUM_IMAGES = 100
@@ -113,7 +113,10 @@ class ViewGalleryHandler(object):
             logging.error("Error reading image list file, doing ls: %s", ioe)
             image_names = os.listdir('../images')
         image_names = [f for f in image_names
-                          if f.lower().endswith('png') and f != 'logo.png']
+                          if (f.lower().endswith('png') or 
+                              #f.lower().endswith('jpeg') or
+                              f.lower().endswith('jpg')
+                             ) and f != 'logo.png']
 
         self.image_names = sorted(image_names, key=lambda s: s.lower())
         self.num_images = len(self.image_names)
