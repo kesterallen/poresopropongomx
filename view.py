@@ -120,10 +120,17 @@ class ViewGalleryHandler(object):
 
         self.image_names = sorted(image_names, key=lambda s: s.lower())
         self.num_images = len(self.image_names)
+
+        # Do a pairwise swap of the image names, so front of the card displays
+        # first:
+        #
         for i in range(1, self.num_images, 2):
             self.image_names[i-1], self.image_names[i] = self.image_names[i],\
                                                          self.image_names[i-1]
 
+        # Ensure there are an even number of images, for side-by-side card
+        # display:
+        #
         if self.num_images % 2 == 1:
             self.image_names.pop(-1)
             self.num_images = len(self.image_names)
@@ -254,16 +261,6 @@ class ViewImageHandler(ViewGalleryHandler):
                                               num_images_display)
         self.permalink_suffix = "img/%s" % self.offset
 
-#class ViewRawHandler(ViewImageHandler):
-#    """The view handler for a single image with no chrome on it."""
-#    def __init__(self,
-#                 offset=None,
-#                 num_images_display=1):
-#        """Passthrough with num_images_display set for single image views."""
-#        super(ViewRawHandler, self).__init__(offset,
-#                                              num_images_display)
-#        self.permalink_suffix = "images/%s" % self.image_names[self.offset]
-
 def main():
     """Page view entry point."""
     cgitb.enable()
@@ -278,8 +275,6 @@ def main():
             view_handler = ViewCardHandler(offset)
         elif view_type == 'img':
             view_handler = ViewImageHandler(offset)
-#        elif view_type == 'raw':
-#            view_handler = ViewRawHandler(offset)
         else:
             view_handler = ViewGalleryHandler(offset)
 
