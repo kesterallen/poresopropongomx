@@ -6,15 +6,15 @@ SM_METADATA_TEMPLATE = """
   <meta name="twitter:card"        content="photo"/>
   <meta name="twitter:site"        content="@poresopropongo"/>
   <meta name="twitter:creator"     content="@poresopropongo"/>
-  <meta name="twitter:url"         content="%s"/>
-  <meta name="twitter:image"       content="http://poresopropongo.mx/%s"/>
-  
+  <meta name="twitter:url"         content="{0}"/>
+  <meta name="twitter:image"       content="http://poresopropongo.mx/{1}"/>
+
   <!-- Facebook preview-->
-  <meta property="og:type"         content="blog"/> 
-  <meta property="og:site_name"    content="Por Eso Propongo"/> 
-  <meta property="fb:admins"       content="poresopropongo"/> 
-  <meta property="og:url"          content="%s"/>
-  <meta property="og:image"        content="http://poresopropongo.mx/%s"/>
+  <meta property="og:type"         content="blog"/>
+  <meta property="og:site_name"    content="Por Eso Propongo"/>
+  <meta property="fb:admins"       content="poresopropongo"/>
+  <meta property="og:url"          content="{0}"/>
+  <meta property="og:image"        content="http://poresopropongo.mx/{1}"/>
 """
 
 NAVBAR_HTML = """
@@ -45,8 +45,8 @@ NAVBAR_HTML = """
              data-layout="button_count">
         </div>
 
-        <a href="https://twitter.com/share" 
-          class="twitter-share-button" 
+        <a href="https://twitter.com/share"
+          class="twitter-share-button"
           data-url="%s"
           data-text="#YaMeCansé #PorEsoPropongo"
           data-dnt="true"
@@ -56,13 +56,13 @@ NAVBAR_HTML = """
 
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
-          <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
+          <li><a href="http://postcard.com/join-a-movement/15"> Manda tu postal </a> </li>
+          <li><a href="%s">Postal al azar</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>%s</li> <!-- navlinks -->
         </ul>
       </div><!--/.nav-collapse -->
-
 
     </div>
   </div>
@@ -89,7 +89,7 @@ PAGE_TEMPLATE = """
     }
   </style>
   <!-- social media metadata start -->
-  %s 
+  %s
   <!-- social media metadata end -->
 </head>
 
@@ -109,8 +109,9 @@ PAGE_TEMPLATE = """
   %s <!-- navbar -->
   <div class="row">
     <!-- postcards start -->
-    %s 
+    %s
     <!-- postcards end -->
+  </div>
   </div>
 </div>
 
@@ -166,16 +167,18 @@ class Renderer(object):
         return text
 
     def render_navbar(self):
-        navlinks = self.render_navlinks() if self.view.do_render_navlinks else ""
+        if self.view.do_render_navlinks:
+            navlinks = self.render_navlinks()
+        else:
+            navlinks = ""
         navbar_html = NAVBAR_HTML % (self.view.permalink,
                                      self.view.permalink,
+                                     self.view.random_card_url,
                                      navlinks,)
         return navbar_html
 
     def render_social_media_metadata(self):
-        sm_metadata_html = SM_METADATA_TEMPLATE % (
-                               self.view.permalink,
-                               self.view.img_url,
+        sm_metadata_html = SM_METADATA_TEMPLATE.format(
                                self.view.permalink,
                                self.view.img_url,)
         return sm_metadata_html
@@ -202,4 +205,6 @@ class Renderer(object):
         postcards = self.render_postcards()
         sm_metadata = self.render_social_media_metadata()
 
-        return PAGE_TEMPLATE % (sm_metadata, navbar, postcards,)
+        return PAGE_TEMPLATE % (sm_metadata,
+                                navbar,
+                                postcards)

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """View class"""
 
-import logging
-import os
 import cgi
 import cgitb
+import logging
+import os
+import random
 from renderer import Renderer
 
 NUM_IMAGES_MINIMUM = 1
@@ -18,16 +19,18 @@ IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
 IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
+#IMAGE_COUNT_FILE = '../images/image_list.txt' # relative to /cgi-bin
+#TODO: experimental for large numbers of images
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
 
-    def load_indices(self, offset, num_images_display):
+    def load_indices(self, num_images_display):
         """
         Create a list of the indexes to the newest images.
         Require the list to be an even number of images, so that a postcard
           front is matched to a postcard back.
-        Require the offset to be an even number, so that the right postcard
+        Require self.offset to be an even number, so that the right postcard
           front is matched to the postcard back.
         Don't index out of the image_names list, on either side
 
@@ -51,17 +54,18 @@ class ViewGalleryHandler(object):
         # Load the offset:
         #
         try:
-            offset = int(float(offset))
+            self.offset = int(float(self.offset))
         except (ValueError, TypeError) as err:
             logging.info("Error converting offset: %s", err)
-            offset = self.max_good_display_offset
-        if offset < 0:
-            offset = 0
-        if offset > self.max_good_display_offset:
-            offset = self.max_good_display_offset
-        if offset % 2 == 1 and self.num_images_display != 1:
-            offset -= 1
-        self.offset = offset
+            self.offset = self.max_good_display_offset
+        if self.offset < 0:
+            self.offset = 0
+        if self.offset > self.max_good_display_offset:
+            self.offset = self.max_good_display_offset
+        is_odd = (self.offset % 2) == 1
+        is_multi = self.num_images_display != 1
+        if is_odd and is_multi:
+            self.offset -= 1
 
         # Load the image_indices:
         #
@@ -72,6 +76,11 @@ class ViewGalleryHandler(object):
             stop_index = NUM_IMAGES_MINIMUM
         image_indices = range(self.offset, stop_index)
         self.image_indices = image_indices
+
+    @property
+    def random_card_url(self):
+        random_index = random.randint(0, self.num_images-1)
+        return CARD_URL_TEMPLATE % random_index
 
     @property
     def max_good_display_offset(self):
@@ -101,22 +110,36 @@ class ViewGalleryHandler(object):
     def load_images(self):
         """Load the image names, and set self.num_images."""
 
+        # TODO: try to use this logic to get a self.num_images from the IMAGE_COUNT_FILE
+        #try:
+        #    with open(IMAGE_COUNT_FILE) as img_file:
+        #        for file_line, l in enumerate(img_file):
+        #            pass
+        #        self.num_images = file_line + 1
+        #except IOError as ioe:
+        #    logging.error("Error reading image count file, doing ls: %s", ioe)
+        #    image_names = os.listdir('../images')
+
         # Load the image list from the pre-generated file, if it exists,
         # otherwise disk-scan it.
         #
         try:
             with open(IMAGE_LIST_FILE) as img_file:
                 image_names = img_file.read().splitlines()
-                image_names = [i.split('/')[-1] for i in image_names]
+                # TODO: use the contents of IMAGE_COUNT_FILE to read in only the right images
+                #image_names = [i.split('/')[-1] for i in image_names] 
             logging.info("Read image list file, using its data")
         except IOError as ioe:
             logging.error("Error reading image list file, doing ls: %s", ioe)
             image_names = os.listdir('../images')
+            logging.error("using ls images")
+
         image_names = [f for f in image_names
-                          if (f.lower().endswith('png') or 
-                              #f.lower().endswith('jpeg') or
-                              f.lower().endswith('jpg')
-                             ) and f != 'logo.png']
+                          if (#f.lower().endswith('png') or
+                              f.lower().endswith('jpeg') #or
+                              #f.lower().endswith('jpg')
+                             )
+                      ]
 
         self.image_names = sorted(image_names, key=lambda s: s.lower())
         self.num_images = len(self.image_names)
@@ -226,14 +249,14 @@ class ViewGalleryHandler(object):
         self.image_names = None
         self.postcard_images = None
         self.image_indices = None
-        self.offset = None
         self.navlinks = None
         self.num_images = None
         self.num_images_display = None
+        self.offset = offset
 
-        # Load data.
+        # Load data. Don't change the order these loads are done in.
         self.load_images()
-        self.load_indices(offset, num_images_display)
+        self.load_indices(num_images_display)
         self.load_navlinks()
         self.load_postcards()
         self.permalink_suffix = self.offset
