@@ -135,9 +135,9 @@ class ViewGalleryHandler(object):
             logging.error("using ls images")
 
         image_names = [f for f in image_names
-                          if (#f.lower().endswith('png') or
-                              f.lower().endswith('jpeg') #or
-                              #f.lower().endswith('jpg')
+                          if (f.lower().endswith('png') or
+                              f.lower().endswith('jpeg') or
+                              f.lower().endswith('jpg')
                              )
                       ]
 
