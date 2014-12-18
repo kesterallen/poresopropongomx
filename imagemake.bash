@@ -1,6 +1,14 @@
 set -e
 set -x
+
+# Make image_list.txt in the Mosaic PNG (also image_count.txt):
+#
+cd /home/kester/Dropbox/Mosaic\ PNGs
+cp image_list_oldpngs.txt image_list.txt
+find 201?????-?? -type f | sort >> image_list.txt
+wc -l image_list.txt | awk '{print $1}' >| image_count.txt
+
+# Mirror image directory, including the image_list.txt and image_count.txt files:
+#
 lftp ftp.fatcow.com -u 'poresopropongomx,Newyork1234!' -e 'mirror --verbose=3 --reverse --delete /home/kester/Dropbox/Mosaic\ PNGs/ /images && exit'
-lftp ftp.fatcow.com -u 'poresopropongomx,Newyork1234!' -e 'cd images && find . && exit' | perl -anle 'print substr($_, 2)' >| '/home/kester/Dropbox/Mosaic PNGs/image_list.txt'
-ls /home/kester/Dropbox/Mosaic\ PNGs/*.{jpg,jpeg,png} | wc -l >| '/home/kester/Dropbox/Mosaic PNGs/image_count.txt'
-cd /home/kester/Dropbox/Mosaic\ PNGs && lftp ftp.fatcow.com -u 'poresopropongomx,Newyork1234!' -e 'cd images && mput image*.txt && exit'
+

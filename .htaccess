@@ -3,6 +3,9 @@ RewriteRule    ^img/?$            cgi-bin/view.py?type=img [NC,L]
 RewriteRule    ^img/(\d+)$        cgi-bin/view.py?type=img&offset=$1 [NC,L]
 RewriteRule    ^card/?$           cgi-bin/view.py?type=card [NC,L]
 RewriteRule    ^card/(\d+)$       cgi-bin/view.py?type=card&offset=$1 [NC,L]
+RewriteRule    ^jump/?$           cgi-bin/view.py?type=jump [NC,L]
+RewriteRule    ^jump/(\d+)?$      cgi-bin/view.py?type=jump&offset=$1 [NC,L]
 RewriteRule    ^/?$               cgi-bin/view.py?type=view [NC,L]
 RewriteRule    ^(\d+)$            cgi-bin/view.py?type=view&offset=$1 [NC,L]
-RewriteRule    ^(\d+)/(\d+)$      cgi-bin/view.py?type=view&offset=$1&num_images_display=$2 [NC,L]
+
+Options +Indexes 

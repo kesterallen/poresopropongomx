@@ -31,14 +31,6 @@ NAVBAR_HTML = """
           <span class="icon-bar"></span>
         </button>
 
-        <a class="pull-left" href="/">
-          <img alt="Ya Me Cansé Por Eso Propongo"
-               src="/logo.png"
-               width="300px" />
-        </a>
-      </div>
-      <div class="navbar-collapse collapse">
-
         <!-- Social media buttons start-->
         <div class="fb-share-button"
              data-href="%s"
@@ -53,6 +45,14 @@ NAVBAR_HTML = """
         >Tweet</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
         <!-- Social media buttons end-->
+
+        <a class="pull-left" href="/">
+          <img alt="Ya Me Cansé Por Eso Propongo"
+               src="/logo.png"
+               width="300px" />
+        </a>
+      </div>
+      <div class="navbar-collapse collapse">
 
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
@@ -77,15 +77,14 @@ PAGE_TEMPLATE = """
   <link rel="stylesheet" href="/bootstrap-3.2.0.min.css">
   <style>
     body {
-      padding-top: 150px;
+      padding-top: 180px;
     }
     .navbar-nav > li > a {
       padding-top:25px !important;
       padding-bottom:25px !important;
     }
     .navbar {
-      min-height:140px !important
-      max-height:140px ! might work
+      min-height:140px !important;
     }
   </style>
   <!-- social media metadata start -->
@@ -109,7 +108,7 @@ PAGE_TEMPLATE = """
   %s <!-- navbar -->
   <div class="row">
     <!-- postcards start -->
-    %s
+%s
     <!-- postcards end -->
   </div>
   </div>
@@ -133,12 +132,8 @@ class Renderer(object):
             sizes = [6, 12, 12, 12]
         else: # gallery
             sizes = [3, 6, 6, 6]
-        self.img_css = ('    <div class="col-lg-%s '
-                                        'col-md-%s '
-                                        'col-sm-%s '
-                                        'col-xm-%s" '
-                                 'style="background-color:black;">\n' %
-                                 (sizes[0], sizes[1], sizes[2], sizes[3]))
+        self.div_class = ('col-lg-%s col-md-%s col-sm-%s col-xm-%s' %
+                          (sizes[0], sizes[1], sizes[2], sizes[3]))
 
     def render_navlinks(self):
         """Render the navlinks' HTML in bootstrap style and return the text.
@@ -151,16 +146,12 @@ class Renderer(object):
         navlinks_html = ['    <ul class="pagination">']
 
         for navlink in self.view.navlinks:
-            if navlink is not None:
-                navlinks_html.append(
-                    '      <li class="%s"><a href="/%s">%s</a></li>' %
-                    (navlink['active'], navlink['href'], navlink['text'])
-                )
-            else:
-                navlinks_html.append(
-                    '      <li class="disabled"><a href="#">...</a></li>'
-                )
-
+            if navlink is None:
+                navlink = {'active': 'disabled', 'href': '#', 'text': '...'}
+            navlinks_html.append(
+                '      <li class="%s"><a href="/%s">%s</a></li>' %
+                (navlink['active'], navlink['href'], navlink['text'])
+            )
         navlinks_html.append('    </ul>')
 
         text = "\n".join(navlinks_html)
@@ -188,11 +179,11 @@ class Renderer(object):
         postcards = []
         for postcard_image in self.view.postcard_images:
             postcard = (
-                '%s\n'
+                '    <div class="%s" style="background-color:black;">\n'
                 '        <a href="%s" >\n'
                 '          <img src="%s" class="thumbnail img-responsive">\n'
                 '        </a>\n'
-                '    </div>') % (self.img_css,
+                '    </div>') % (self.div_class,
                                  postcard_image['href'],
                                  postcard_image['img_src'])
             postcards.append(postcard)

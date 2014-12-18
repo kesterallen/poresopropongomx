@@ -47,7 +47,7 @@ class ViewGalleryHandler(object):
             num_images_display = DEFAULT_NUM_IMAGES
         #if num_images_display % 2 == 1:
             #num_images_display -= 1
-        if num_images_display < 1:
+        if num_images_display < NUM_IMAGES_MINIMUM:
             num_images_display = NUM_IMAGES_MINIMUM
         self.num_images_display = num_images_display
 
@@ -69,7 +69,7 @@ class ViewGalleryHandler(object):
 
         # Load the image_indices:
         #
-        stop_index = self.offset + num_images_display
+        stop_index = self.offset + self.num_images_display
         if stop_index > self.num_images:
             stop_index = self.num_images
         if stop_index < 1:
@@ -127,7 +127,7 @@ class ViewGalleryHandler(object):
             with open(IMAGE_LIST_FILE) as img_file:
                 image_names = img_file.read().splitlines()
                 # TODO: use the contents of IMAGE_COUNT_FILE to read in only the right images
-                #image_names = [i.split('/')[-1] for i in image_names] 
+                #image_names = [i.split('/')[-1] for i in image_names]
             logging.info("Read image list file, using its data")
         except IOError as ioe:
             logging.error("Error reading image list file, doing ls: %s", ioe)
@@ -147,9 +147,9 @@ class ViewGalleryHandler(object):
         # Do a pairwise swap of the image names, so front of the card displays
         # first:
         #
-        for i in range(1, self.num_images, 2):
-            self.image_names[i-1], self.image_names[i] = self.image_names[i],\
-                                                         self.image_names[i-1]
+        #for i in range(1, self.num_images, 2):
+        #    self.image_names[i-1], self.image_names[i] = self.image_names[i],\
+        #                                                 self.image_names[i-1]
 
         # Ensure there are an even number of images, for side-by-side card
         # display:
@@ -209,32 +209,56 @@ class ViewGalleryHandler(object):
             self.navlinks.append(
                 {'href': prev_offset, 'text': '&raquo;', 'active': ''})
 
-    def load_postcards(self):
+    def make_postcard_image(self, i):
         """If the gallery is being displayed, the link should go to a
         single-card view. If a single card is being displayed, the
         link should go to the image."""
 
+        image_name = self.image_names[i]
+        img_src = IMAGE_FILE_LOCATION_TEMPLATE % image_name
+
+        postcard_image = {
+            'name': image_name,
+            'img_src': img_src,
+        }
+        if self.num_images_display == 1: # one image
+            postcard_image['href'] = img_src
+        if self.num_images_display == 2: # single postcard --
+                                         # two images (front and back)
+            postcard_image['href'] = IMAGE_URL_TEMPLATE % i
+        else: # gallery
+            postcard_image['href'] = CARD_URL_TEMPLATE % i
+
+        return postcard_image
+
+    def load_postcards(self):
+        """Aggregate every postcard for the contents of image_indices."""
         self.postcard_images = []
         for i in self.image_indices:
-            image = self.image_names[i]
-            postcard_image = {
-                'name': image,
-                'img_src': IMAGE_FILE_LOCATION_TEMPLATE % image,
-            }
-            if self.num_images_display == 1: # single image
-                postcard_image['href'] = '#'
-            if self.num_images_display == 2: # single postcard --
-                                             # two images (front and back)
-                postcard_image['href'] = IMAGE_URL_TEMPLATE % i
-            else: # gallery
-                postcard_image['href'] = CARD_URL_TEMPLATE % i
-
+            postcard_image = self.make_postcard_image(i)
             self.postcard_images.append(postcard_image)
 
     @property
     def permalink(self):
         """Generate a permanent link for gallery page."""
         return PERMALINK_TEMPLATE % self.permalink_suffix
+
+    def redirect(self, page_number):
+        """Users will enter a page number, so translate that into an offset."""
+
+        try:
+            page_number = int(float(page_number))
+            offset = self.newest_page_offset - self.num_images_display * page_number
+            if offset < 0:
+                offset = 0
+            if offset > self.max_good_display_offset:
+                offset = self.max_good_display_offset
+        except (ValueError, TypeError) as err:
+            offset = 0
+
+        url = PERMALINK_TEMPLATE % offset
+        print "Status: 303 See other"
+        print "Location: %s" % url
 
     def get(self):
         """Handle a GET request for the page."""
@@ -301,7 +325,11 @@ def main():
         else:
             view_handler = ViewGalleryHandler(offset)
 
-        view_handler.get()
+        if view_type == 'jump':
+            page_number = args['page_number'].value if 'page_number' in args else 1
+            view_handler.redirect(page_number)
+        else:
+            view_handler.get()
     except:
         print "Status: 500"
         cgitb.handler()
