@@ -27,11 +27,15 @@
           <li><a href="/contact.html">Contacto</a>
           </li>
           <li>
-              <form action="/jump" method="POST" >
-                Jump to page number:
-                <input type="text" name="page_number"><br>
-              </form>
-
+            <form class="navbar-form navbar-right" action="/jump" method="POST" >
+              <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       name="page_number"
+                       size="10"
+                       placeholder="Jump to page">
+              </div>
+            </form>
           </li>
         </ul>
       </div><!--/.nav-collapse -->

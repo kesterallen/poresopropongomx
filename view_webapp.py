@@ -2,21 +2,24 @@
 
 import logging
 import os
+import jinja2
 import webapp2
-from renderer import Renderer
+import urllib
 
 NUM_IMAGES_MINIMUM = 2
 DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
-IMAGE_URL_TEMPLATE = 'http://poresopropongo.mx/images/%s'
+IMAGE_URL_TEMPLATE ='http://poresopropongo.mx/images/%s' 
 CARD_URL_TEMPLATE = '/card/%s'
-TEST_IMAGE_TEMPLATES = [
-    {'template': 'batch15_Page_%03d.png', 'numfiles': 206},
-    {'template': 'PC142253_Page_%03d.png', 'numfiles': 556},
-    {'template': 'PC142388_Page_%03d.png', 'numfiles': 146},
-    {'template': 'PC142500_Page_%02d.png', 'numfiles': 50},
-]
+IMAGE_LIST_FILE = 'http://poresopropongo.mx/images/image_list.txt'
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+                        loader=jinja2.FileSystemLoader(
+                                        os.path.dirname(__file__)),
+                        extensions=['jinja2.ext.autoescape'],
+                        autoescape=True)
+
 
 class ViewAllHandler(webapp2.RequestHandler):
     """The view handler for this app."""
@@ -94,16 +97,12 @@ class ViewAllHandler(webapp2.RequestHandler):
 
         # TODO: os.listdir doesn't seem to work on GAE
         #image_names = os.listdir('images')
-        image_names = []
-        for tmpl in TEST_IMAGE_TEMPLATES:
-            for i in range(1, tmpl['numfiles']+1):
-                image_names.append(tmpl['template'] % i)
-
+        image_names = urllib.urlopen(IMAGE_LIST_FILE).read().splitlines()
         self.image_names = sorted(image_names, key=lambda s: s.lower())
         self.num_images = len(self.image_names)
-        for i in range(0, self.num_images, 2):
-            self.image_names[i], self.image_names[i+1] = self.image_names[i+1],\
-                                                         self.image_names[i]
+        #for i in range(0, self.num_images, 2):
+            #self.image_names[i], self.image_names[i+1] = self.image_names[i+1],\
+                                                         #self.image_names[i]
 
         if self.num_images % 2 == 1:
             self.image_names.pop(-1)
@@ -181,8 +180,9 @@ class ViewAllHandler(webapp2.RequestHandler):
 
     def get_page(self, offset, num_images_display):
         self.object_init(offset, num_images_display)
-        renderer = Renderer(view=self)
-        self.response.write(renderer.render())
+        template = JINJA_ENVIRONMENT.get_template('page_webapp.html')
+        template_data = {'navlinks': self.navlinks, 'postcard_images': self.postcard_images}
+        self.response.write(template.render(template_data))
 
     def get(self, offset=None):
         self.is_single = False

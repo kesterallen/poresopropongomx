@@ -18,8 +18,8 @@
   <div class="row">
     {% for postcard_image in postcard_images %}
       <div class="col-lg-3 col-md-6 col-sm-6 col-xm-6" style="background-color:black;">
-          <a href="{{postcard_image.url}}" >
-            <img src="{{postcard_image.url}}" class="thumbnail img-responsive">
+          <a href="{{postcard_image.href}}" >
+            <img src="{{postcard_image.img_src}}" class="thumbnail img-responsive">
           </a>
       </div>
     {% endfor %}

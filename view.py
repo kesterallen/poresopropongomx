@@ -144,13 +144,6 @@ class ViewGalleryHandler(object):
         self.image_names = sorted(image_names, key=lambda s: s.lower())
         self.num_images = len(self.image_names)
 
-        # Do a pairwise swap of the image names, so front of the card displays
-        # first:
-        #
-        #for i in range(1, self.num_images, 2):
-        #    self.image_names[i-1], self.image_names[i] = self.image_names[i],\
-        #                                                 self.image_names[i-1]
-
         # Ensure there are an even number of images, for side-by-side card
         # display:
         #
@@ -234,9 +227,18 @@ class ViewGalleryHandler(object):
     def load_postcards(self):
         """Aggregate every postcard for the contents of image_indices."""
         self.postcard_images = []
-        for i in self.image_indices:
-            postcard_image = self.make_postcard_image(i)
+        for image_index in self.image_indices:
+            postcard_image = self.make_postcard_image(image_index)
             self.postcard_images.append(postcard_image)
+
+        # Do a pairwise swap of the postcards, so front of the card displays
+        # first:
+        #
+        for i in range(1, len(self.postcard_images), 2):
+            front = self.postcard_images[i]
+            back = self.postcard_images[i-1]
+            self.postcard_images[i] = back
+            self.postcard_images[i-1] = front
 
     @property
     def permalink(self):
