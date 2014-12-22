@@ -3,11 +3,15 @@
 
 SM_METADATA_TEMPLATE = """
   <!-- Twitter card -->
-  <meta name="twitter:card"        content="photo"/>
+  <meta name="twitter:card"        content="gallery"/>
   <meta name="twitter:site"        content="@poresopropongo"/>
+  <meta name="twitter:title"       content="Por Eso Propongo"/>
   <meta name="twitter:creator"     content="@poresopropongo"/>
   <meta name="twitter:url"         content="{0}"/>
-  <meta name="twitter:image"       content="http://poresopropongo.mx/{1}"/>
+  <meta name="twitter:image0:src"       content="http://poresopropongo.mx/{1}"/>
+  <meta name="twitter:image1:src"       content="http://poresopropongo.mx/{2}"/>
+  <meta name="twitter:image2:src"       content="http://poresopropongo.mx/{1}"/>
+  <meta name="twitter:image3:src"       content="http://poresopropongo.mx/{2}"/>
 
   <!-- Facebook preview-->
   <meta property="og:type"         content="blog"/>
@@ -15,6 +19,7 @@ SM_METADATA_TEMPLATE = """
   <meta property="fb:admins"       content="poresopropongo"/>
   <meta property="og:url"          content="{0}"/>
   <meta property="og:image"        content="http://poresopropongo.mx/{1}"/>
+  <meta property="og:image"        content="http://poresopropongo.mx/{2}"/>
 """
 
 NAVBAR_HTML = """
@@ -171,7 +176,8 @@ class Renderer(object):
     def render_social_media_metadata(self):
         sm_metadata_html = SM_METADATA_TEMPLATE.format(
                                self.view.permalink,
-                               self.view.img_url,)
+                               self.view.img_urls[0],
+                               self.view.img_urls[1],)
         return sm_metadata_html
 
     def render_postcards(self):

@@ -286,7 +286,14 @@ class ViewGalleryHandler(object):
         self.load_navlinks()
         self.load_postcards()
         self.permalink_suffix = self.offset
-        self.img_url = "images/%s" % self.image_names[self.offset]
+
+        if self.offset % 2 == 0:
+            pair_offset = self.offset + 1
+        else:
+            pair_offset = self.offset - 1
+
+        self.img_urls = ["images/%s" % self.image_names[self.offset],
+                         "images/%s" % self.image_names[pair_offset],]
         self.do_render_navlinks = True
 
 class ViewCardHandler(ViewGalleryHandler):
