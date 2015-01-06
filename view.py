@@ -4,7 +4,6 @@
 import cgi
 import cgitb
 import logging
-import os
 import random
 from renderer import Renderer
 
@@ -19,8 +18,6 @@ IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
 IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
-#IMAGE_COUNT_FILE = '../images/image_list.txt' # relative to /cgi-bin
-#TODO: experimental for large numbers of images
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
@@ -45,8 +42,6 @@ class ViewGalleryHandler(object):
         except (ValueError, TypeError) as err:
             logging.info("Error converting num_images_display: %s", err)
             num_images_display = DEFAULT_NUM_IMAGES
-        #if num_images_display % 2 == 1:
-            #num_images_display -= 1
         if num_images_display < NUM_IMAGES_MINIMUM:
             num_images_display = NUM_IMAGES_MINIMUM
         self.num_images_display = num_images_display
@@ -79,6 +74,7 @@ class ViewGalleryHandler(object):
 
     @property
     def random_card_url(self):
+        """Generate the URL of a random card."""
         random_index = random.randint(0, self.num_images-1)
         return CARD_URL_TEMPLATE % random_index
 
@@ -110,38 +106,18 @@ class ViewGalleryHandler(object):
     def load_images(self):
         """Load the image names, and set self.num_images."""
 
-        # TODO: try to use this logic to get a self.num_images from the IMAGE_COUNT_FILE
-        #try:
-        #    with open(IMAGE_COUNT_FILE) as img_file:
-        #        for file_line, l in enumerate(img_file):
-        #            pass
-        #        self.num_images = file_line + 1
-        #except IOError as ioe:
-        #    logging.error("Error reading image count file, doing ls: %s", ioe)
-        #    image_names = os.listdir('../images')
-
-        # Load the image list from the pre-generated file, if it exists,
-        # otherwise disk-scan it.
+        # Load the image list from the (pre-generated, sorted) list of images
+        # file:
         #
         try:
             with open(IMAGE_LIST_FILE) as img_file:
                 image_names = img_file.read().splitlines()
-                # TODO: use the contents of IMAGE_COUNT_FILE to read in only the right images
-                #image_names = [i.split('/')[-1] for i in image_names]
             logging.info("Read image list file, using its data")
         except IOError as ioe:
-            logging.error("Error reading image list file, doing ls: %s", ioe)
-            image_names = os.listdir('../images')
-            logging.error("using ls images")
+            logging.error("Error reading image list file: %s", ioe)
+            image_names = []
 
-        image_names = [f for f in image_names
-                          if (f.lower().endswith('png') or
-                              f.lower().endswith('jpeg') or
-                              f.lower().endswith('jpg')
-                             )
-                      ]
-
-        self.image_names = sorted(image_names, key=lambda s: s.lower())
+        self.image_names = image_names
         self.num_images = len(self.image_names)
 
         # Ensure there are an even number of images, for side-by-side card
@@ -246,16 +222,20 @@ class ViewGalleryHandler(object):
         return PERMALINK_TEMPLATE % self.permalink_suffix
 
     def redirect(self, page_number):
-        """Users will enter a page number, so translate that into an offset."""
-
+        """
+        Redirect to the correct page.
+        Users will enter a page number, so translate that into an offset.
+        """
         try:
             page_number = int(float(page_number))
-            offset = self.newest_page_offset - self.num_images_display * page_number
+            offset = self.newest_page_offset - (
+                            self.num_images_display * page_number)
             if offset < 0:
                 offset = 0
             if offset > self.max_good_display_offset:
                 offset = self.max_good_display_offset
         except (ValueError, TypeError) as err:
+            logging.info("Error doing redirect: %s", err)
             offset = 0
 
         url = PERMALINK_TEMPLATE % offset
@@ -322,11 +302,14 @@ def main():
     cgitb.enable()
 
     try:
+        # Parse request arguments:
+        #
         args = cgi.FieldStorage()
-
         view_type = args['type'].value if 'type' in args else 'gallery'
         offset = args['offset'].value if 'offset' in args else None
 
+        # Construct the appropriate handler:
+        #
         if view_type == 'card':
             view_handler = ViewCardHandler(offset)
         elif view_type == 'img':
@@ -334,6 +317,8 @@ def main():
         else:
             view_handler = ViewGalleryHandler(offset)
 
+        # Serve the page:
+        #
         if view_type == 'jump':
             page_number = args['page_number'].value if 'page_number' in args else 1
             view_handler.redirect(page_number)
