@@ -17,7 +17,11 @@ PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
-IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
+is_test = False
+if is_test:
+    IMAGE_LIST_FILE = '../../Mosaic PNGs/image_list.txt' # relative to /cgi-bin
+else:
+    IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""

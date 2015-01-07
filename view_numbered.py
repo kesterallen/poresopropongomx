@@ -13,14 +13,17 @@ NUM_IMAGES_MINIMUM = 1
 DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
-IMAGE_FILE_LOCATION_TEMPLATE = '/images/%s'
+IMAGE_FILE_LOCATION_TEMPLATE = '/images_numbered/%s'
 
 PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
-#IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt' # relative to /cgi-bin # for testing
-IMAGE_COUNT_FILE = '../images_numbered/image_count.txt' # relative to /cgi-bin # for production
+is_test = False
+if is_test:
+    IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt' # relative to /cgi-bin # for testing
+else:
+    IMAGE_COUNT_FILE = '../images_numbered/image_count.txt' # relative to /cgi-bin # for production
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
@@ -123,9 +126,6 @@ class ViewGalleryHandler(object):
             logging.error("Error reading image list file: %s", ioe)
             image_count = 2
 
-        self.num_images = image_count
-        print image_count
-
         # Ensure there are an even number of images, for side-by-side card
         # display:
         #
@@ -187,14 +187,14 @@ class ViewGalleryHandler(object):
 
     def image_name(self, i):
         """Make a URL of the form '%07d/%07d.png', where the directory is
-        the 1000s place, and the filename is the starting-from-0 image in that
+        the 1000s place, and the filename is the starting-from-1 image in that
         directory.  e.g. '0001000/0001073.jpg' """
 
         # TODO: use something like this to convert: 
         # cat ../../Mosaic\ PNGs/image_list.txt | perl -lane 'printf qq!$_  %07d/%010d.jpg\n!, $./1000, $.'
         
-        idir = i / NUM_IMAGES_IN_DIRECTORY
-        number_image_name = '%07d/%010d.jpg' % (idir, i)
+        idir = (i + 1) / NUM_IMAGES_IN_DIRECTORY
+        number_image_name = '%07d/%010d.jpg' % (idir, i + 1)
         return number_image_name
 
     def make_postcard_image(self, i):
@@ -324,7 +324,7 @@ def main():
         #
         args = cgi.FieldStorage()
         view_type = args['type'].value if 'type' in args else 'gallery'
-        offset = 10000000 #args['offset'].value if 'offset' in args else None
+        offset = args['offset'].value if 'offset' in args else None
 
         # Construct the appropriate handler:
         #
