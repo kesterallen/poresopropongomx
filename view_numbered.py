@@ -19,11 +19,12 @@ PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
+# Relative to /cgi-bin:
 is_test = False
 if is_test:
-    IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt' # relative to /cgi-bin # for testing
+    IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt'
 else:
-    IMAGE_COUNT_FILE = '../images_numbered/image_count.txt' # relative to /cgi-bin # for production
+    IMAGE_COUNT_FILE = '../images_numbered/image_count.txt'
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
@@ -125,6 +126,7 @@ class ViewGalleryHandler(object):
         except IOError as ioe:
             logging.error("Error reading image list file: %s", ioe)
             image_count = 2
+        self.num_images = image_count
 
         # Ensure there are an even number of images, for side-by-side card
         # display:
@@ -190,9 +192,10 @@ class ViewGalleryHandler(object):
         the 1000s place, and the filename is the starting-from-1 image in that
         directory.  e.g. '0001000/0001073.jpg' """
 
-        # TODO: use something like this to convert: 
-        # cat ../../Mosaic\ PNGs/image_list.txt | perl -lane 'printf qq!$_  %07d/%010d.jpg\n!, $./1000, $.'
-        
+        # TODO: use something like this to convert:
+        # cat ../../Mosaic\ PNGs/image_list.txt | \
+        #     perl -lane 'printf qq!$_  %07d/%010d.jpg\n!, $./1000, $.'
+
         idir = (i + 1) / NUM_IMAGES_IN_DIRECTORY
         number_image_name = '%07d/%010d.jpg' % (idir, i + 1)
         return number_image_name

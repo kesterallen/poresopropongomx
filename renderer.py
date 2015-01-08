@@ -66,6 +66,17 @@ NAVBAR_HTML = """
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>%s</li> <!-- navlinks -->
+          <li>
+            <form class="navbar-form navbar-right" action="/jump" method="POST" >
+              <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       name="page_number"
+                       size="12"
+                       placeholder="Jump to page">
+              </div>
+            </form>
+          </li>
         </ul>
       </div><!--/.nav-collapse -->
 
