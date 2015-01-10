@@ -62,7 +62,7 @@ NAVBAR_HTML = """
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
           <li><a href="http://postcard.com/join-a-movement/15"> Manda tu postal </a> </li>
-          <li><a href="%s">Postal al azar</a></li>
+          <li><a href="/randcard">Postal al azar</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>%s</li> <!-- navlinks -->
@@ -180,7 +180,6 @@ class Renderer(object):
             navlinks = ""
         navbar_html = NAVBAR_HTML % (self.view.permalink,
                                      self.view.permalink,
-                                     self.view.random_card_url,
                                      navlinks,)
         return navbar_html
 

@@ -5,6 +5,7 @@ RewriteRule    ^card/?$           cgi-bin/view_numbered.py?type=card [NC,L]
 RewriteRule    ^card/(\d+)$       cgi-bin/view_numbered.py?type=card&offset=$1 [NC,L]
 RewriteRule    ^jump/?$           cgi-bin/view_numbered.py?type=jump [NC,L]
 RewriteRule    ^jump/(\d+)?$      cgi-bin/view_numbered.py?type=jump&offset=$1 [NC,L]
+RewriteRule    ^randcard/?$       cgi-bin/view_numbered.py?type=randcard [NC,L]
 RewriteRule    ^/?$               cgi-bin/view_numbered.py?type=view [NC,L]
 RewriteRule    ^(\d+)$            cgi-bin/view_numbered.py?type=view&offset=$1 [NC,L]
 

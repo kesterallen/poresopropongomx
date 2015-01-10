@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
-"""View class"""
+"""
+View class. 
+
+This version implicitly assumes that images are in ../images_numbered (relative
+to cgi-bin) and are in directory/filenames of the form '%07d/%10d.png', where
+the directory is the 1000s place, and the filename is the starting-from-1 image
+in that directory, e.g. '0001000/0001073.jpg' or '0013000/0013910.jpg'.
+"""
 
 import cgi
 import cgitb
@@ -188,7 +195,7 @@ class ViewGalleryHandler(object):
                 {'href': prev_offset, 'text': '&raquo;', 'active': ''})
 
     def image_name(self, i):
-        """Make a URL of the form '%07d/%07d.png', where the directory is
+        """Make a URL of the form '%07d/%010d.png', where the directory is
         the 1000s place, and the filename is the starting-from-1 image in that
         directory.  e.g. '0001000/0001073.jpg' """
 
@@ -243,7 +250,14 @@ class ViewGalleryHandler(object):
         """Generate a permanent link for gallery page."""
         return PERMALINK_TEMPLATE % self.permalink_suffix
 
-    def redirect(self, page_number):
+    def redirect(self, url):
+        print "Status: 303 See other"
+        print "Location: %s" % url
+
+    def jump_to_card(self):
+        self.redirect(self.random_card_url)
+
+    def jump_to_page(self, page_number):
         """
         Redirect to the correct page.
         Users will enter a page number, so translate that into an offset.
@@ -261,8 +275,7 @@ class ViewGalleryHandler(object):
             offset = 0
 
         url = PERMALINK_TEMPLATE % offset
-        print "Status: 303 See other"
-        print "Location: %s" % url
+        self.redirect(url)
 
     def get(self):
         """Handle a GET request for the page."""
@@ -342,7 +355,9 @@ def main():
         #
         if view_type == 'jump':
             page_number = args['page_number'].value if 'page_number' in args else 1
-            view_handler.redirect(page_number)
+            view_handler.jump_to_page(page_number)
+        elif view_type == 'randcard':
+            view_handler.jump_to_card()
         else:
             view_handler.get()
     except:
