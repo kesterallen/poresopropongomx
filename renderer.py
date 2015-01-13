@@ -8,10 +8,10 @@ SM_METADATA_TEMPLATE = """
   <meta name="twitter:title"       content="Por Eso Propongo"/>
   <meta name="twitter:creator"     content="@poresopropongo"/>
   <meta name="twitter:url"         content="{0}"/>
-  <meta name="twitter:image0:src"       content="http://poresopropongo.mx/{1}"/>
-  <meta name="twitter:image1:src"       content="http://poresopropongo.mx/{2}"/>
-  <meta name="twitter:image2:src"       content="http://poresopropongo.mx/{1}"/>
-  <meta name="twitter:image3:src"       content="http://poresopropongo.mx/{2}"/>
+  <meta name="twitter:image0:src"  content="http://poresopropongo.mx/{1}"/>
+  <meta name="twitter:image1:src"  content="http://poresopropongo.mx/{2}"/>
+  <meta name="twitter:image2:src"  content="http://poresopropongo.mx/{1}"/>
+  <meta name="twitter:image3:src"  content="http://poresopropongo.mx/{2}"/>
 
   <!-- Facebook preview-->
   <meta property="og:type"         content="blog"/>

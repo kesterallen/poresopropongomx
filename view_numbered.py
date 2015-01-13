@@ -201,7 +201,7 @@ class ViewGalleryHandler(object):
 
         # TODO: use something like this to convert:
         # cat ../../Mosaic\ PNGs/image_list.txt | \
-        #     perl -lane 'printf qq!$_  %07d/%010d.jpg\n!, $./1000, $.'
+        #     perl -lane 'printf qq!cp $_ %07d/%010d.jpg\n!, $./1000, $.'
 
         idir = (i + 1) / NUM_IMAGES_IN_DIRECTORY
         number_image_name = '%07d/%010d.jpg' % (idir, i + 1)
@@ -306,8 +306,8 @@ class ViewGalleryHandler(object):
         else:
             pair_offset = self.offset - 1
 
-        self.img_urls = ["imges/%s" % self.image_name(self.offset),
-                         "imges/%s" % self.image_name(pair_offset),]
+        self.img_urls = ["images/%s" % self.image_name(self.offset),
+                         "images/%s" % self.image_name(pair_offset),]
         self.do_render_navlinks = True
 
 class ViewCardHandler(ViewGalleryHandler):
