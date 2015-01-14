@@ -106,6 +106,7 @@ PAGE_TEMPLATE = """
   <!-- social media metadata start -->
   %s
   <!-- social media metadata end -->
+  <title>Por Eso Propongo</title>
 </head>
 
 <body role="document">
