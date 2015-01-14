@@ -36,6 +36,35 @@ else:
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
 
+    def __init__(self,
+                 offset=None,
+                 num_images_display=DEFAULT_NUM_IMAGES):
+        """Construct an object and initialize the images and indices."""
+
+        # Init member vars here to make pylint happy.
+        self.postcard_images = None
+        self.image_indices = None
+        self.navlinks = None
+        self.num_images = None
+        self.num_images_display = None
+        self.offset = offset
+
+        # Load data. Don't change the order these loads are done in.
+        self.load_images()
+        self.load_indices(num_images_display)
+        self.load_navlinks()
+        self.load_postcards()
+        self.permalink_suffix = self.offset
+
+        if self.offset % 2 == 0:
+            pair_offset = self.offset + 1
+        else:
+            pair_offset = self.offset - 1
+
+        self.img_urls = ["images/%s" % self.image_name(self.offset),
+                         "images/%s" % self.image_name(pair_offset),]
+        self.do_render_navlinks = True
+
     def load_indices(self, num_images_display):
         """
         Create a list of the indexes to the newest images.
@@ -282,34 +311,6 @@ class ViewGalleryHandler(object):
         renderer = Renderer(view=self)
         print "Content-type:text/html\n", renderer.render()
 
-    def __init__(self,
-                 offset=None,
-                 num_images_display=DEFAULT_NUM_IMAGES):
-
-        # Init member vars here to make pylint happy.
-        self.postcard_images = None
-        self.image_indices = None
-        self.navlinks = None
-        self.num_images = None
-        self.num_images_display = None
-        self.offset = offset
-
-        # Load data. Don't change the order these loads are done in.
-        self.load_images()
-        self.load_indices(num_images_display)
-        self.load_navlinks()
-        self.load_postcards()
-        self.permalink_suffix = self.offset
-
-        if self.offset % 2 == 0:
-            pair_offset = self.offset + 1
-        else:
-            pair_offset = self.offset - 1
-
-        self.img_urls = ["images/%s" % self.image_name(self.offset),
-                         "images/%s" % self.image_name(pair_offset),]
-        self.do_render_navlinks = True
-
 class ViewCardHandler(ViewGalleryHandler):
     """The view handler for a single card."""
     def __init__(self,
@@ -331,6 +332,10 @@ class ViewImageHandler(ViewGalleryHandler):
                                               num_images_display)
         self.permalink_suffix = "img/%s" % self.offset
 
+class ViewJumpHandler(ViewGalleryHandler):
+    """The view handler for jumping to a random gallery page or or card.  This
+    is only used to distinguis it from possibly-cached pages."""
+
 def main():
     """Page view entry point."""
     cgitb.enable()
@@ -342,7 +347,19 @@ def main():
         view_type = args['type'].value if 'type' in args else 'gallery'
         offset = args['offset'].value if 'offset' in args else None
 
-        # Construct the appropriate handler:
+        # If a jump or random card is requested, do that and exit:
+        #
+        if view_type == 'jump':
+            view_handler = ViewGalleryHandler(offset)
+            pg_num = args['page_number'].value if 'page_number' in args else 1
+            view_handler.jump_to_page(pg_num)
+            return
+        if view_type == 'randcard':
+            view_handler = ViewGalleryHandler(offset)
+            view_handler.jump_to_card()
+            return
+
+        # Normal use: construct the appropriate handler and serve the page:
         #
         if view_type == 'card':
             view_handler = ViewCardHandler(offset)
@@ -350,16 +367,7 @@ def main():
             view_handler = ViewImageHandler(offset)
         else:
             view_handler = ViewGalleryHandler(offset)
-
-        # Serve the page:
-        #
-        if view_type == 'jump':
-            page_number = args['page_number'].value if 'page_number' in args else 1
-            view_handler.jump_to_page(page_number)
-        elif view_type == 'randcard':
-            view_handler.jump_to_card()
-        else:
-            view_handler.get()
+        view_handler.get()
     except:
         print "Status: 500"
         cgitb.handler()
