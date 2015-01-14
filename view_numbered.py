@@ -350,12 +350,12 @@ def main():
         # If a jump or random card is requested, do that and exit:
         #
         if view_type == 'jump':
-            view_handler = ViewGalleryHandler(offset)
+            view_handler = ViewJumpHandler(offset)
             pg_num = args['page_number'].value if 'page_number' in args else 1
             view_handler.jump_to_page(pg_num)
             return
         if view_type == 'randcard':
-            view_handler = ViewGalleryHandler(offset)
+            view_handler = ViewJumpHandler(offset)
             view_handler.jump_to_card()
             return
 
