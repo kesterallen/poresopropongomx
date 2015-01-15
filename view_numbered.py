@@ -9,8 +9,9 @@ in that directory, e.g. '0001000/0001073.jpg' or '0013000/0013910.jpg'.
 """
 
 import cgi
-import cgitb
+#import cgitb
 import logging
+import os
 import random
 from renderer import Renderer
 
@@ -21,6 +22,7 @@ DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
 IMAGE_FILE_LOCATION_TEMPLATE = '/images_numbered/%s'
+IMAGE_TEMPLATE = '%07d/%010d.jpg'
 
 PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/img/%s'
@@ -30,8 +32,10 @@ CARD_URL_TEMPLATE = '/card/%s'
 is_test = False
 if is_test:
     IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt'
+    CACHE_DIR = '/home/kester/Desktop/cached'
 else:
     IMAGE_COUNT_FILE = '../images_numbered/image_count.txt'
+    CACHE_DIR = '../cached'
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
@@ -50,8 +54,13 @@ class ViewGalleryHandler(object):
         self.offset = offset
 
         # Load data. Don't change the order these loads are done in.
-        self.load_images()
+        self.load_image_count()
         self.load_indices(num_images_display)
+
+        self.num_pages = int(self.num_images) / int(self.num_images_display)
+
+        #if self.is_cached:
+            #return
         self.load_navlinks()
         self.load_postcards()
         self.permalink_suffix = self.offset
@@ -115,6 +124,9 @@ class ViewGalleryHandler(object):
         image_indices = range(self.offset, stop_index)
         self.image_indices = image_indices
 
+        # The current page number, where one page contains num_images_display:
+        self.image_page = int(self.offset) / int(self.num_images_display)
+
     @property
     def random_card_url(self):
         """Generate the URL of a random card."""
@@ -133,23 +145,11 @@ class ViewGalleryHandler(object):
         return offset
 
     @property
-    def image_page(self):
-        """Return the current page number, where one page has
-        num_images_display on it."""
-        return int(self.offset) / int(self.num_images_display)
-
-    @property
-    def num_pages(self):
-        """Return the total number of pages, where one page has
-        num_images_display on it."""
-        return int(self.num_images) / int(self.num_images_display)
-
-    @property
     def newest_page_offset(self):
         """Return the offset of the newest full page."""
         return self.num_pages * self.num_images_display
 
-    def load_images(self): # TODO: rename this
+    def load_image_count(self):
         """Load the image names, and set self.num_images."""
 
         # Load the image list from the (pre-generated, sorted) list of images
@@ -193,6 +193,7 @@ class ViewGalleryHandler(object):
             self.navlinks.append(
                 {'href': next_offset, 'text': '&laquo;', 'active': ''})
 
+        #import ipdb; ipdb.set_trace()
         page_indices = range(self.num_pages)
 
         for ipage in page_indices:
@@ -224,16 +225,12 @@ class ViewGalleryHandler(object):
                 {'href': prev_offset, 'text': '&raquo;', 'active': ''})
 
     def image_name(self, i):
-        """Make a URL of the form '%07d/%010d.png', where the directory is
-        the 1000s place, and the filename is the starting-from-1 image in that
+        """Make a URL of the form IMAGE_TEMPLATE, where the directory is the
+        1000s place, and the filename is the starting-from-1 image in that
         directory.  e.g. '0001000/0001073.jpg' """
 
-        # TODO: use something like this to convert:
-        # cat ../../Mosaic\ PNGs/image_list.txt | \
-        #     perl -lane 'printf qq!cp $_ %07d/%010d.jpg\n!, $./1000, $.'
-
         idir = (i + 1) / NUM_IMAGES_IN_DIRECTORY
-        number_image_name = '%07d/%010d.jpg' % (idir, i + 1)
+        number_image_name = IMAGE_TEMPLATE % (idir, i + 1)
         return number_image_name
 
     def make_postcard_image(self, i):
@@ -308,8 +305,27 @@ class ViewGalleryHandler(object):
 
     def get(self):
         """Handle a GET request for the page."""
+        #if self.is_cached:
+            #self.redirect(self.cached_name)
+            #return
         renderer = Renderer(view=self)
-        print "Content-type:text/html\n", renderer.render()
+        page = renderer.render()
+        self.write_page_to_cache(page)
+        print "Content-type:text/html\n", page
+
+    @property
+    def cached_name(self):
+        name = "%s/%s_%s.html" % (
+                    CACHE_DIR, self.__class__.__name__, self.offset)
+        return name
+
+    @property
+    def is_cached(self):
+        return os.path.isfile(self.cached_name)
+
+    def write_page_to_cache(self, page):
+        with open(self.cached_name, 'w') as fh:
+            fh.write(page)
 
 class ViewCardHandler(ViewGalleryHandler):
     """The view handler for a single card."""
@@ -338,7 +354,7 @@ class ViewJumpHandler(ViewGalleryHandler):
 
 def main():
     """Page view entry point."""
-    cgitb.enable()
+    #cgitb.enable()
 
     try:
         # Parse request arguments:
@@ -370,7 +386,7 @@ def main():
         view_handler.get()
     except:
         print "Status: 500"
-        cgitb.handler()
+        #cgitb.handler()
 
 if __name__ == "__main__":
     main()
