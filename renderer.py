@@ -58,14 +58,15 @@ NAVBAR_HTML = """
         </a>
       </div>
       <div class="navbar-collapse collapse">
-
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
           <li><a href="http://postcard.com/join-a-movement/15"> Manda tu postal </a> </li>
           <li><a href="/randcard">Postal al azar</a></li>
+          <li><a href="/wordcloud.html">Las propuestas</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>%s</li> <!-- navlinks -->
+          <!--
           <li>
             <form class="navbar-form navbar-right" action="/jump" method="POST" >
               <div class="input-group">
@@ -77,6 +78,7 @@ NAVBAR_HTML = """
               </div>
             </form>
           </li>
+          -->
         </ul>
       </div><!--/.nav-collapse -->
 
