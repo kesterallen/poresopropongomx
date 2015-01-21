@@ -48,13 +48,14 @@ class ViewGalleryHandler(object):
         """Construct an object and initialize the images and indices."""
 
         # Init member vars here to make pylint happy.
-        self.postcard_images = None
-        self.image_indices = None
+        self.postcard_images = []
+        self.image_indices = []
         self.navlinks = []
         self.num_images = None
         self.num_images_display = None
         self.offset = offset
         self.do_render_navlinks = True
+        self.permalink_suffix = None
 
         # Load data. Don't change the order these loads are done in.
         self.load_image_count()
@@ -305,15 +306,14 @@ class ViewGalleryHandler(object):
 
     def get(self):
         """Handle a GET request for the page."""
-        renderer = Renderer(view=self)
-        page = renderer.render()
 
-        if is_caching_on:
-            if self.is_cached:
-                self.redirect(self.cached_name)
-                return
-            else:
-                self.write_page_to_cache(page)
+        if is_caching_on and self.is_cached:
+            with open(self.cached_name) as fh:
+                page = fh.read()
+        else:
+            renderer = Renderer(view=self)
+            page = renderer.render()
+            self.write_page_to_cache(page)
         print "Content-type:text/html\n", page
 
     @property
