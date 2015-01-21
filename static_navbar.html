@@ -1,7 +1,7 @@
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
-        <button type="button" 
+        <button type="button"
                 class="navbar-toggle collapsed"
                 data-toggle="collapse"
                 data-target=".navbar-collapse">
@@ -11,22 +11,21 @@
           <span class="icon-bar"></span>
         </button>
 
+        <!-- Social media buttons start
+             TODO: Overwrite data-href and data-url in render.py -->
+        <div class="fb-share-button"
+             data-href="http://poresopropongo.mx" 
+             data-layout="button_count">
+        </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <a href="https://twitter.com/share"
+          class="twitter-share-button"
+          data-url="http://poresopropongo.mx" 
+          data-text="#YaMeCansé #PorEsoPropongo"
+          data-dnt="true"
+        >Tweet</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        <!-- Social media buttons end-->
 
         <a class="pull-left" href="/">
           <img alt="Ya Me Cansé Por Eso Propongo"
@@ -55,9 +54,9 @@
             </form>
           </li>
           -->
+          <div class="navlinks"></div> <!-- Overwrite this in render.py, if this is in a dynamic page. -->
         </ul>
       </div><!--/.nav-collapse -->
-
 
     </div>
   </div>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-View class. 
+View class.
 
 This version implicitly assumes that images are in ../images_numbered (relative
 to cgi-bin) and are in directory/filenames of the form '%07d/%10d.png', where
@@ -28,8 +28,10 @@ PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
-# Relative to /cgi-bin:
 is_test = False
+is_caching_on = False
+
+# Relative to /cgi-bin:
 if is_test:
     IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt'
     CACHE_DIR = '/home/kester/Desktop/cached'
@@ -59,8 +61,8 @@ class ViewGalleryHandler(object):
 
         self.num_pages = int(self.num_images) / int(self.num_images_display)
 
-        #if self.is_cached:
-            #return
+        if is_caching_on and self.is_cached:
+            return
         self.load_navlinks()
         self.load_postcards()
         self.permalink_suffix = self.offset
@@ -70,8 +72,8 @@ class ViewGalleryHandler(object):
         else:
             pair_offset = self.offset - 1
 
-        self.img_urls = ["images/%s" % self.image_name(self.offset),
-                         "images/%s" % self.image_name(pair_offset),]
+        self.img_urls = ["images_numbered/%s" % self.image_name(self.offset),
+                         "images_numbered/%s" % self.image_name(pair_offset),]
         self.do_render_navlinks = True
 
     def load_indices(self, num_images_display):
@@ -83,8 +85,7 @@ class ViewGalleryHandler(object):
           front is matched to the postcard back.
         Don't index out of the image_names list, on either side
 
-        SETS: self.image_indices, self.offset, self.num_images_display
-              Implicitly sets self.image_page
+        SETS: self.image_indices, .offset, .num_images_display, .image_page
         """
 
         # Load the num_images_display:
@@ -305,23 +306,26 @@ class ViewGalleryHandler(object):
 
     def get(self):
         """Handle a GET request for the page."""
-        #if self.is_cached:
-            #self.redirect(self.cached_name)
-            #return
         renderer = Renderer(view=self)
         page = renderer.render()
-        self.write_page_to_cache(page)
+
+        if is_caching_on:
+            if self.is_cached:
+                self.redirect(self.cached_name)
+                return
+            else:
+                self.write_page_to_cache(page)
         print "Content-type:text/html\n", page
+
+    @property
+    def is_cached(self):
+        return os.path.isfile(self.cached_name)
 
     @property
     def cached_name(self):
         name = "%s/%s_%s.html" % (
                     CACHE_DIR, self.__class__.__name__, self.offset)
         return name
-
-    @property
-    def is_cached(self):
-        return os.path.isfile(self.cached_name)
 
     def write_page_to_cache(self, page):
         with open(self.cached_name, 'w') as fh:
