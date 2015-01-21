@@ -4,9 +4,9 @@
 is_test = False
 # Relative to /cgi-bin:
 if is_test:
-    STATIC_NAVBAR_HTML = "static_navbar.html"
+    NAVBAR_HTML_FILENAME = "navbar.html"
 else:
-    STATIC_NAVBAR_HTML = "../static_navbar.html"
+    NAVBAR_HTML_FILENAME = "../navbar.html"
 
 SM_METADATA_TEMPLATE = """
   <!-- Twitter card -->
@@ -23,75 +23,12 @@ SM_METADATA_TEMPLATE = """
   <!-- Facebook preview-->
   <meta property="og:type"         content="blog"/>
   <meta property="og:site_name"    content="Por Eso Propongo"/>
-  <meta property="fb:admins"       content="poresopropongo"/>
+  <meta property="og:title"        content="Por Eso Propongo"/>
+  <meta property="fb:admins"       content="386237151543281"/> <!-- from http://graph.facebook.com/poresopropongo -->
   <meta property="og:url"          content="{0}"/>
   <meta property="og:image"        content="http://poresopropongo.mx/{1}"/>
   <meta property="og:image"        content="http://poresopropongo.mx/{2}"/>
 """
-
-#NAVBAR_HTML = """
-#  <div class="navbar navbar-default navbar-fixed-top">
-#    <div class="container">
-#      <div class="navbar-header">
-#        <button type="button"
-#                class="navbar-toggle collapsed"
-#                data-toggle="collapse"
-#                data-target=".navbar-collapse">
-#          <span class="sr-only">Toggle navigation</span>
-#          <span class="icon-bar"></span>
-#          <span class="icon-bar"></span>
-#          <span class="icon-bar"></span>
-#        </button>
-#
-#        <!-- Social media buttons start-->
-#        <div class="fb-share-button"
-#             data-href="%s"
-#             data-layout="button_count">
-#        </div>
-#
-#        <a href="https://twitter.com/share"
-#          class="twitter-share-button"
-#          data-url="%s"
-#          data-text="#YaMeCansé #PorEsoPropongo"
-#          data-dnt="true"
-#        >Tweet</a>
-#        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-#        <!-- Social media buttons end-->
-#
-#        <a class="pull-left" href="/">
-#          <img alt="Ya Me Cansé Por Eso Propongo"
-#               src="/logo.png"
-#               width="300px" />
-#        </a>
-#      </div>
-#      <div class="navbar-collapse collapse">
-#        <ul class="nav navbar-nav navbar-right">
-#          <li><a href="/">Postales enviadas</a></li>
-#          <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a> </li>
-#          <li><a href="/randcard">Postal al azar</a></li>
-#          <li><a href="/wordcloud.html">Las propuestas</a></li>
-#          <li><a href="/about.html">¿Por qué proponer?</a></li>
-#          <li><a href="/contact.html">Contacto</a></li>
-#          <li>%s</li> <!-- navlinks -->
-#          <!--
-#          <li>
-#            <form class="navbar-form navbar-right" action="/jump" method="POST" >
-#              <div class="input-group">
-#                <input type="text"
-#                       class="form-control"
-#                       name="page_number"
-#                       size="12"
-#                       placeholder="Jump to page">
-#              </div>
-#            </form>
-#          </li>
-#          -->
-#        </ul>
-#      </div><!--/.nav-collapse -->
-#
-#    </div>
-#  </div>
-#"""
 
 PAGE_TEMPLATE = """
 <!DOCTYPE html>
@@ -184,14 +121,18 @@ class Renderer(object):
         return text
 
     def render_navbar(self):
+        """
+        This is a kludgy way to get the navbar all in one file which 
+        is used by the static pages and this class. This method does replaces
+        on the FB and Twitter button included URLs, and renders the navlinks
+        if applicable.
+        """
         if self.view.do_render_navlinks:
             navlinks = self.render_navlinks()
         else:
             navlinks = ""
-        #navbar_html = NAVBAR_HTML % (self.view.permalink,
-        #                             self.view.permalink,
-        #                             navlinks,)
-        with open(STATIC_NAVBAR_HTML) as fh:
+
+        with open(NAVBAR_HTML_FILENAME) as fh:
             navbar_html = fh.read()
         navbar_html = navbar_html.replace(
                           'data-href="http://poresopropongo.mx"',
@@ -205,10 +146,11 @@ class Renderer(object):
         return navbar_html
 
     def render_social_media_metadata(self):
+        """Render the twitter and FB metadata cards."""
         sm_metadata_html = SM_METADATA_TEMPLATE.format(
                                self.view.permalink,
-                               self.view.img_urls[0],
-                               self.view.img_urls[1],)
+                               self.view.img_urls[1],
+                               self.view.img_urls[0],)
         return sm_metadata_html
 
     def render_postcards(self):
@@ -233,6 +175,4 @@ class Renderer(object):
         postcards = self.render_postcards()
         sm_metadata = self.render_social_media_metadata()
 
-        return PAGE_TEMPLATE % (sm_metadata,
-                                navbar,
-                                postcards)
+        return PAGE_TEMPLATE % (sm_metadata, navbar, postcards)

@@ -15,4 +15,4 @@ To deploy new images:
 Deploy:
 
     lftp ftp.fatcow.com -e 'cd cgi-bin && mput *.py && exit'
-
+    lftp ftp.fatcow.com -e 'mirror --verbose=3 --reverse /home/kester/Dropbox/google_appengine/poresopropongomx/cgi-bin/ /cgi-bin && exit'

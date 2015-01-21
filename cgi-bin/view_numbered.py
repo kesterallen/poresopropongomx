@@ -9,7 +9,7 @@ in that directory, e.g. '0001000/0001073.jpg' or '0013000/0013910.jpg'.
 """
 
 import cgi
-#import cgitb
+import cgitb
 import logging
 import os
 import random
@@ -29,7 +29,7 @@ IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
 is_test = False
-is_caching_on = False
+is_caching_on = False#True
 
 # Relative to /cgi-bin:
 if is_test:
@@ -50,10 +50,11 @@ class ViewGalleryHandler(object):
         # Init member vars here to make pylint happy.
         self.postcard_images = None
         self.image_indices = None
-        self.navlinks = None
+        self.navlinks = []
         self.num_images = None
         self.num_images_display = None
         self.offset = offset
+        self.do_render_navlinks = True
 
         # Load data. Don't change the order these loads are done in.
         self.load_image_count()
@@ -74,7 +75,6 @@ class ViewGalleryHandler(object):
 
         self.img_urls = ["images_numbered/%s" % self.image_name(self.offset),
                          "images_numbered/%s" % self.image_name(pair_offset),]
-        self.do_render_navlinks = True
 
     def load_indices(self, num_images_display):
         """
@@ -194,7 +194,6 @@ class ViewGalleryHandler(object):
             self.navlinks.append(
                 {'href': next_offset, 'text': '&laquo;', 'active': ''})
 
-        #import ipdb; ipdb.set_trace()
         page_indices = range(self.num_pages)
 
         for ipage in page_indices:
@@ -358,7 +357,7 @@ class ViewJumpHandler(ViewGalleryHandler):
 
 def main():
     """Page view entry point."""
-    #cgitb.enable()
+    cgitb.enable()
 
     try:
         # Parse request arguments:
@@ -390,7 +389,7 @@ def main():
         view_handler.get()
     except:
         print "Status: 500"
-        #cgitb.handler()
+        cgitb.handler()
 
 if __name__ == "__main__":
     main()
