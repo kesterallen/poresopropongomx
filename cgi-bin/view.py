@@ -1,30 +1,81 @@
 # -*- coding: utf-8 -*-
-"""View class"""
+"""
+View class.
+
+This version implicitly assumes that images are in ../images_numbered (relative
+to cgi-bin) and are in directory/filenames of the form '%07d/%10d.png', where
+the directory is the 1000s place, and the filename is the starting-from-1 image
+in that directory, e.g. '0001000/0001073.jpg' or '0013000/0013910.jpg'.
+"""
 
 import cgi
 import cgitb
 import logging
+import os
 import random
 from renderer import Renderer
+
+NUM_IMAGES_IN_DIRECTORY = 1000
 
 NUM_IMAGES_MINIMUM = 1
 DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
-IMAGE_FILE_LOCATION_TEMPLATE = '/images/%s'
+IMAGE_FILE_LOCATION_TEMPLATE = '/images_numbered/%s'
+IMAGE_TEMPLATE = '%07d/%010d.jpg'
 
 PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMAGE_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
 is_test = False
+is_caching_on = False#True
+
+# Relative to /cgi-bin:
 if is_test:
-    IMAGE_LIST_FILE = '../../Mosaic PNGs/image_list.txt' # relative to /cgi-bin
+    IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt'
+    CACHE_DIR = '/home/kester/Desktop/cached'
 else:
-    IMAGE_LIST_FILE = '../images/image_list.txt' # relative to /cgi-bin
+    IMAGE_COUNT_FILE = '../images_numbered/image_count.txt'
+    CACHE_DIR = '../cached'
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
+
+    def __init__(self,
+                 offset=None,
+                 num_images_display=DEFAULT_NUM_IMAGES):
+        """Construct an object and initialize the images and indices."""
+
+        # Init member vars here to make pylint happy.
+        self.postcard_images = []
+        self.image_indices = []
+        self.navlinks = []
+        self.num_images = None
+        self.num_images_display = None
+        self.offset = offset
+        self.do_render_navlinks = True
+        self.permalink_suffix = None
+
+        # Load data. Don't change the order these loads are done in.
+        self.load_image_count()
+        self.load_indices(num_images_display)
+
+        self.num_pages = int(self.num_images) / int(self.num_images_display)
+
+        if is_caching_on and self.is_cached:
+            return
+        self.load_navlinks()
+        self.load_postcards()
+        self.permalink_suffix = self.offset
+
+        if self.offset % 2 == 0:
+            pair_offset = self.offset + 1
+        else:
+            pair_offset = self.offset - 1
+
+        self.img_urls = ["images_numbered/%s" % self.image_name(self.offset),
+                         "images_numbered/%s" % self.image_name(pair_offset),]
 
     def load_indices(self, num_images_display):
         """
@@ -35,8 +86,7 @@ class ViewGalleryHandler(object):
           front is matched to the postcard back.
         Don't index out of the image_names list, on either side
 
-        SETS: self.image_indices, self.offset, self.num_images_display
-              Implicitly sets self.image_page
+        SETS: self.image_indices, .offset, .num_images_display, .image_page
         """
 
         # Load the num_images_display:
@@ -76,6 +126,9 @@ class ViewGalleryHandler(object):
         image_indices = range(self.offset, stop_index)
         self.image_indices = image_indices
 
+        # The current page number, where one page contains num_images_display:
+        self.image_page = int(self.offset) / int(self.num_images_display)
+
     @property
     def random_card_url(self):
         """Generate the URL of a random card."""
@@ -88,48 +141,38 @@ class ViewGalleryHandler(object):
         display, and return the offset to that set of images."""
         offset = self.num_images_display * (self.num_images /
                                             self.num_images_display - 1)
+        if offset < 0:
+            offset = NUM_IMAGES_MINIMUM
+
         return offset
-
-    @property
-    def image_page(self):
-        """Return the current page number, where one page has
-        num_images_display on it."""
-        return int(self.offset) / int(self.num_images_display)
-
-    @property
-    def num_pages(self):
-        """Return the total number of pages, where one page has
-        num_images_display on it."""
-        return int(self.num_images) / int(self.num_images_display)
 
     @property
     def newest_page_offset(self):
         """Return the offset of the newest full page."""
         return self.num_pages * self.num_images_display
 
-    def load_images(self):
+    def load_image_count(self):
         """Load the image names, and set self.num_images."""
 
         # Load the image list from the (pre-generated, sorted) list of images
         # file:
         #
         try:
-            with open(IMAGE_LIST_FILE) as img_file:
-                image_names = img_file.read().splitlines()
-            logging.info("Read image list file, using its data")
+            with open(IMAGE_COUNT_FILE) as img_file:
+                image_count = int(float(img_file.read().strip()))
+            logging.info("Read image count file, using its data")
         except IOError as ioe:
             logging.error("Error reading image list file: %s", ioe)
-            image_names = []
-
-        self.image_names = image_names
-        self.num_images = len(self.image_names)
+            image_count = 2
+        self.num_images = image_count
 
         # Ensure there are an even number of images, for side-by-side card
         # display:
         #
         if self.num_images % 2 == 1:
-            self.image_names.pop(-1)
-            self.num_images = len(self.image_names)
+            self.num_images -= 1
+        if self.num_images < NUM_IMAGES_MINIMUM:
+            self.num_images = NUM_IMAGES_MINIMUM
 
     def load_navlinks(self):
         """
@@ -138,7 +181,7 @@ class ViewGalleryHandler(object):
         The math in the 'href' definition controls this.
 
         Note that this math is more awkward than it could be. This is caused
-        by the implicit date-descending sort of self.image_names.
+        by the implicit date-descending sort of the images.
         """
 
         self.navlinks = []
@@ -182,12 +225,21 @@ class ViewGalleryHandler(object):
             self.navlinks.append(
                 {'href': prev_offset, 'text': '&raquo;', 'active': ''})
 
+    def image_name(self, i):
+        """Make a URL of the form IMAGE_TEMPLATE, where the directory is the
+        1000s place, and the filename is the starting-from-1 image in that
+        directory.  e.g. '0001000/0001073.jpg' """
+
+        idir = (i + 1) / NUM_IMAGES_IN_DIRECTORY
+        number_image_name = IMAGE_TEMPLATE % (idir, i + 1)
+        return number_image_name
+
     def make_postcard_image(self, i):
         """If the gallery is being displayed, the link should go to a
         single-card view. If a single card is being displayed, the
         link should go to the image."""
 
-        image_name = self.image_names[i]
+        image_name = self.image_name(i)
         img_src = IMAGE_FILE_LOCATION_TEMPLATE % image_name
 
         postcard_image = {
@@ -225,7 +277,14 @@ class ViewGalleryHandler(object):
         """Generate a permanent link for gallery page."""
         return PERMALINK_TEMPLATE % self.permalink_suffix
 
-    def redirect(self, page_number):
+    def redirect(self, url):
+        print "Status: 303 See other"
+        print "Location: %s" % url
+
+    def jump_to_card(self):
+        self.redirect(self.random_card_url)
+
+    def jump_to_page(self, page_number):
         """
         Redirect to the correct page.
         Users will enter a page number, so translate that into an offset.
@@ -243,42 +302,33 @@ class ViewGalleryHandler(object):
             offset = 0
 
         url = PERMALINK_TEMPLATE % offset
-        print "Status: 303 See other"
-        print "Location: %s" % url
+        self.redirect(url)
 
     def get(self):
         """Handle a GET request for the page."""
-        renderer = Renderer(view=self)
-        print "Content-type:text/html\n", renderer.render()
 
-    def __init__(self,
-                 offset=None,
-                 num_images_display=DEFAULT_NUM_IMAGES):
-
-        # Init member vars here to make pylint happy.
-        self.image_names = None
-        self.postcard_images = None
-        self.image_indices = None
-        self.navlinks = None
-        self.num_images = None
-        self.num_images_display = None
-        self.offset = offset
-
-        # Load data. Don't change the order these loads are done in.
-        self.load_images()
-        self.load_indices(num_images_display)
-        self.load_navlinks()
-        self.load_postcards()
-        self.permalink_suffix = self.offset
-
-        if self.offset % 2 == 0:
-            pair_offset = self.offset + 1
+        if is_caching_on and self.is_cached:
+            with open(self.cached_name) as fh:
+                page = fh.read()
         else:
-            pair_offset = self.offset - 1
+            renderer = Renderer(view=self)
+            page = renderer.render()
+            self.write_page_to_cache(page)
+        print "Content-type:text/html\n", page
 
-        self.img_urls = ["images/%s" % self.image_names[self.offset],
-                         "images/%s" % self.image_names[pair_offset],]
-        self.do_render_navlinks = True
+    @property
+    def is_cached(self):
+        return os.path.isfile(self.cached_name)
+
+    @property
+    def cached_name(self):
+        name = "%s/%s_%s.html" % (
+                    CACHE_DIR, self.__class__.__name__, self.offset)
+        return name
+
+    def write_page_to_cache(self, page):
+        with open(self.cached_name, 'w') as fh:
+            fh.write(page)
 
 class ViewCardHandler(ViewGalleryHandler):
     """The view handler for a single card."""
@@ -301,6 +351,10 @@ class ViewImageHandler(ViewGalleryHandler):
                                               num_images_display)
         self.permalink_suffix = "img/%s" % self.offset
 
+class ViewJumpHandler(ViewGalleryHandler):
+    """The view handler for jumping to a random gallery page or or card.  This
+    is only used to distinguis it from possibly-cached pages."""
+
 def main():
     """Page view entry point."""
     cgitb.enable()
@@ -312,7 +366,19 @@ def main():
         view_type = args['type'].value if 'type' in args else 'gallery'
         offset = args['offset'].value if 'offset' in args else None
 
-        # Construct the appropriate handler:
+        # If a jump or random card is requested, do that and exit:
+        #
+        if view_type == 'jump':
+            view_handler = ViewJumpHandler(offset)
+            pg_num = args['page_number'].value if 'page_number' in args else 1
+            view_handler.jump_to_page(pg_num)
+            return
+        if view_type == 'randcard':
+            view_handler = ViewJumpHandler(offset)
+            view_handler.jump_to_card()
+            return
+
+        # Normal use: construct the appropriate handler and serve the page:
         #
         if view_type == 'card':
             view_handler = ViewCardHandler(offset)
@@ -320,14 +386,7 @@ def main():
             view_handler = ViewImageHandler(offset)
         else:
             view_handler = ViewGalleryHandler(offset)
-
-        # Serve the page:
-        #
-        if view_type == 'jump':
-            page_number = args['page_number'].value if 'page_number' in args else 1
-            view_handler.redirect(page_number)
-        else:
-            view_handler.get()
+        view_handler.get()
     except:
         print "Status: 500"
         cgitb.handler()

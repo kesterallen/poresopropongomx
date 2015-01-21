@@ -1,6 +1,12 @@
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
+        <!--<a class="pull-left" href="/">-->
+          <img alt="Ya Me Cansé Por Eso Propongo"
+               src="/logo.png"
+               width="400px" />
+        <!--</a>-->
+
         <button type="button"
                 class="navbar-toggle collapsed"
                 data-toggle="collapse"
@@ -12,30 +18,25 @@
         </button>
 
         <!-- Social media buttons start
-             TODO: Overwrite data-href and data-url in render.py -->
+             render.py overwrites data-href and data-url -->
         <div class="fb-share-button"
-             data-href="http://poresopropongo.mx" 
+             data-href="http://poresopropongo.mx"
              data-layout="button_count">
         </div>
 
         <a href="https://twitter.com/share"
           class="twitter-share-button"
-          data-url="http://poresopropongo.mx" 
+          data-url="http://poresopropongo.mx"
           data-text="#YaMeCansé #PorEsoPropongo"
           data-dnt="true"
         >Tweet</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
         <!-- Social media buttons end-->
 
-        <a class="pull-left" href="/">
-          <img alt="Ya Me Cansé Por Eso Propongo"
-               src="/logo.png" 
-               width="300px" />
-        </a>
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/">Postales enviadas</a> </li>
+          <!--<li><a href="/">Postales enviadas</a> </li>-->
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a> </li>
           <li><a href="/randcard">Postal al azar</a> </li>
           <li><a href="/wordcloud.html">Las propuestas</a></li>
@@ -45,11 +46,7 @@
           <li>
             <form class="navbar-form navbar-right" action="/jump" method="POST" >
               <div class="input-group">
-                <input type="text"
-                       class="form-control"
-                       name="page_number"
-                       size="12"
-                       placeholder="Jump to page">
+                <input type="text" class="form-control" name="page_number" size="12" placeholder="Jump to page">
               </div>
             </form>
           </li>
