@@ -1,11 +1,23 @@
+  <!-- Hook for FB Share button-->
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <!-- Hook for FB Share button end-->
+
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
         <!--<a class="pull-left" href="/">-->
+        <a href="/">
           <img alt="Ya Me Cansé Por Eso Propongo"
                src="/logo.png"
                width="300px" />
-        <!--</a>-->
+        </a>
 
         <button type="button"
                 class="navbar-toggle collapsed"
@@ -21,11 +33,12 @@
              render.py overwrites data-href and data-url -->
         <div class="fb-share-button"
              data-href="http://poresopropongo.mx"
-             data-layout="button_count">
+             data-layout="button">
         </div>
 
         <a href="https://twitter.com/share"
           class="twitter-share-button"
+          data-count="none"
           data-url="http://poresopropongo.mx"
           data-text="#YaMeCansé #PorEsoPropongo"
           data-dnt="true"
@@ -36,7 +49,7 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <!--<li><a href="/">Postales enviadas</a> </li>-->
+          <li><a href="/">Postales enviadas</a> </li>
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a> </li>
           <li><a href="/randcard">Postal al azar</a> </li>
           <li><a href="/wordcloud.html">Las propuestas</a></li>
