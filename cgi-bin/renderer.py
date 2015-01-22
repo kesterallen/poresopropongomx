@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Render template class"""
 
-is_test = False
+IS_TEST = False
 # Relative to /cgi-bin:
-if is_test:
+if IS_TEST:
     NAVBAR_HTML_FILENAME = "navbar.html"
 else:
     NAVBAR_HTML_FILENAME = "../navbar.html"
@@ -24,7 +24,8 @@ SM_METADATA_TEMPLATE = """
   <meta property="og:type"         content="blog"/>
   <meta property="og:site_name"    content="Por Eso Propongo"/>
   <meta property="og:title"        content="Por Eso Propongo"/>
-  <meta property="fb:admins"       content="386237151543281"/> <!-- from http://graph.facebook.com/poresopropongo -->
+  <meta property="fb:admins"       content="386237151543281"/>
+                          <!-- from http://graph.facebook.com/poresopropongo -->
   <meta property="og:url"          content="{0}"/>
   <meta property="og:image"        content="http://poresopropongo.mx/{1}"/>
   <meta property="og:image"        content="http://poresopropongo.mx/{2}"/>
@@ -122,7 +123,7 @@ class Renderer(object):
 
     def render_navbar(self):
         """
-        This is a kludgy way to get the navbar all in one file which 
+        This is a kludgy way to get the navbar all in one file which
         is used by the static pages and this class. This method does replaces
         on the FB and Twitter button included URLs, and renders the navlinks
         if applicable.
@@ -132,8 +133,8 @@ class Renderer(object):
         else:
             navlinks = ""
 
-        with open(NAVBAR_HTML_FILENAME) as fh:
-            navbar_html = fh.read()
+        with open(NAVBAR_HTML_FILENAME) as nb_file:
+            navbar_html = nb_file.read()
         navbar_html = navbar_html.replace(
                           'data-href="http://poresopropongo.mx"',
                           'data-href="%s"' % self.view.permalink)

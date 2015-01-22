@@ -9,7 +9,7 @@ in that directory, e.g. '0001000/0001073.jpg' or '0013000/0013910.jpg'.
 """
 
 import cgi
-import cgitb
+#import cgitb
 import logging
 import os
 import random
@@ -21,23 +21,29 @@ NUM_IMAGES_MINIMUM = 1
 DEFAULT_NUM_IMAGES = 100
 DEFAULT_NUM_IMAGES_ONE_CARD = 2
 
-IMAGE_FILE_LOCATION_TEMPLATE = '/images_numbered/%s'
+IMAGE_FILE_LOCATION_TEMPLATE = 'images_numbered/%s'
+IMAGE_HREF_LOCATION_TEMPLATE = '/%s' % IMAGE_FILE_LOCATION_TEMPLATE
 IMAGE_TEMPLATE = '%07d/%010d.jpg'
 
 PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
-IMAGE_URL_TEMPLATE = '/img/%s'
+IMG_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
-is_test = False
-is_caching_on = False#True
+IS_TEST = True#False
+IS_CACHING_ON = False#True
 
 # Relative to /cgi-bin:
-if is_test:
-    IMAGE_COUNT_FILE = '../../Mosaic PNGs/image_count.txt'
+if IS_TEST:
+    IMAGE_COUNT_FILE = '/home/kester/Desktop/images_numbered/image_count.txt'
     CACHE_DIR = '/home/kester/Desktop/cached'
 else:
     IMAGE_COUNT_FILE = '../images_numbered/image_count.txt'
     CACHE_DIR = '../cached'
+
+def redirect(url):
+    """Redirect to the url."""
+    print "Status: 303 See other"
+    print "Location: %s" % url
 
 class ViewGalleryHandler(object):
     """The view handler for the gallery."""
@@ -56,14 +62,17 @@ class ViewGalleryHandler(object):
         self.offset = offset
         self.do_render_navlinks = True
         self.permalink_suffix = None
+        self.image_page = None
 
         # Load data. Don't change the order these loads are done in.
         self.load_image_count()
         self.load_indices(num_images_display)
 
+        #import ipdb; ipdb.set_trace()
+
         self.num_pages = int(self.num_images) / int(self.num_images_display)
 
-        if is_caching_on and self.is_cached:
+        if IS_CACHING_ON and self.is_cached:
             return
         self.load_navlinks()
         self.load_postcards()
@@ -74,8 +83,9 @@ class ViewGalleryHandler(object):
         else:
             pair_offset = self.offset - 1
 
-        self.img_urls = ["images_numbered/%s" % self.image_name(self.offset),
-                         "images_numbered/%s" % self.image_name(pair_offset),]
+        self.img_urls = [
+            IMAGE_FILE_LOCATION_TEMPLATE % self.image_name(self.offset),
+            IMAGE_FILE_LOCATION_TEMPLATE % self.image_name(pair_offset),]
 
     def load_indices(self, num_images_display):
         """
@@ -240,7 +250,7 @@ class ViewGalleryHandler(object):
         link should go to the image."""
 
         image_name = self.image_name(i)
-        img_src = IMAGE_FILE_LOCATION_TEMPLATE % image_name
+        img_src = IMAGE_HREF_LOCATION_TEMPLATE % image_name
 
         postcard_image = {
             'name': image_name,
@@ -250,7 +260,7 @@ class ViewGalleryHandler(object):
             postcard_image['href'] = img_src
         if self.num_images_display == 2: # single postcard --
                                          # two images (front and back)
-            postcard_image['href'] = IMAGE_URL_TEMPLATE % i
+            postcard_image['href'] = IMG_URL_TEMPLATE % i
         else: # gallery
             postcard_image['href'] = CARD_URL_TEMPLATE % i
 
@@ -277,12 +287,9 @@ class ViewGalleryHandler(object):
         """Generate a permanent link for gallery page."""
         return PERMALINK_TEMPLATE % self.permalink_suffix
 
-    def redirect(self, url):
-        print "Status: 303 See other"
-        print "Location: %s" % url
-
     def jump_to_card(self):
-        self.redirect(self.random_card_url)
+        """Redirect to a random card view."""
+        redirect(self.random_card_url)
 
     def jump_to_page(self, page_number):
         """
@@ -302,33 +309,38 @@ class ViewGalleryHandler(object):
             offset = 0
 
         url = PERMALINK_TEMPLATE % offset
-        self.redirect(url)
+        redirect(url)
 
     def get(self):
         """Handle a GET request for the page."""
 
-        if is_caching_on and self.is_cached:
-            with open(self.cached_name) as fh:
-                page = fh.read()
+        if IS_CACHING_ON and self.is_cached:
+            with open(self.cached_name) as cachefile:
+                page = cachefile.read()
         else:
             renderer = Renderer(view=self)
             page = renderer.render()
-            self.write_page_to_cache(page)
+            if IS_CACHING_ON:
+                self.write_page_to_cache(page)
         print "Content-type:text/html\n", page
 
     @property
     def is_cached(self):
+        """Return if the current view page is cached or not."""
         return os.path.isfile(self.cached_name)
 
     @property
     def cached_name(self):
+        """Return this view's caching name."""
         name = "%s/%s_%s.html" % (
                     CACHE_DIR, self.__class__.__name__, self.offset)
         return name
 
     def write_page_to_cache(self, page):
-        with open(self.cached_name, 'w') as fh:
-            fh.write(page)
+        """Write the page to cache, if it isn't already in the cache."""
+        if not os.path.isfile(self.cached_name):
+            with open(self.cached_name, 'w') as cachefile:
+                cachefile.write(page)
 
 class ViewCardHandler(ViewGalleryHandler):
     """The view handler for a single card."""
@@ -353,11 +365,11 @@ class ViewImageHandler(ViewGalleryHandler):
 
 class ViewJumpHandler(ViewGalleryHandler):
     """The view handler for jumping to a random gallery page or or card.  This
-    is only used to distinguis it from possibly-cached pages."""
+    is only used to distinguish it from possibly-cached pages."""
 
 def main():
     """Page view entry point."""
-    cgitb.enable()
+    #cgitb.enable()
 
     try:
         # Parse request arguments:
@@ -389,7 +401,7 @@ def main():
         view_handler.get()
     except:
         print "Status: 500"
-        cgitb.handler()
+        #cgitb.handler()
 
 if __name__ == "__main__":
     main()
