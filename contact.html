@@ -2,16 +2,14 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <script src="/jquery-1.11.1.min.js"></script>
-  <script> $(function(){ $("#navbar").load("navbar.html"); }); </script> 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/bootstrap-3.2.0.min.css">
   <style>
-    body { 
+    body {
       padding-top: 150px;
     }
     .navbar-nav > li > a {
-      padding-top:25px !important; 
+      padding-top:25px !important;
       padding-bottom:25px !important;
     }
     .navbar {
@@ -21,6 +19,8 @@
   <title>Por Eso Propongo</title>
 </head>
 <body role="document">
+
+<div class="container-fluid">
   <div id="navbar"></div>
 
   <h2>Contacto</h2>
@@ -56,6 +56,8 @@
 
   <img class="img-responsive" src="banner.jpg"/>
 </div>
+<script src="/jquery-1.11.1.min.js"></script>
+<script>$(function(){ $("#navbar").load("navbar.html"); });</script>
 <script src="/bootstrap-3.2.0.min.js"></script>
 </body>
 </html>
