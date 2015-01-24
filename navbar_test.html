@@ -1,0 +1,81 @@
+  <style>
+    .logo1 { color: #000; background-color: #fff; }
+    .logo2 { color: #fff; background-color: #000; }
+    body { padding-top: 150px; }
+  </style>
+
+  <!-- Hook for FB Share button-->
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <!-- Hook for FB Share button end-->
+
+  <div class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+
+        <a class="navbar-brand" href="/">
+          <div class="logo1 ">#YaMeCansé</div>
+          <div class="logo2 ">Por Eso Propongo</div>
+        </a>
+
+        <button type="button"
+                class="navbar-toggle collapsed"
+                data-toggle="collapse"
+                data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
+          <li><a href="/randcard">Postal al azar</a></li>
+          <li><a href="/wordcloud.html">Las propuestas</a></li>
+          <li><a href="/about.html">¿Por qué proponer?</a></li>
+          <li><a href="/contact.html">Contacto</a></li>
+          <li>
+          <!--
+          <div class="navlinks"></div>--> <!-- Overwrite this in render.py, if this is in a dynamic page. -->
+            <ul class="pagination pagination-sm">
+              <li class="active"><a href="/13100">1</a></li>
+              <li class=""><a href="/13000">2</a></li>
+              <li class="disabled"><a href="/#">...</a></li>
+              <li class=""><a href="/100">131</a></li>
+              <li class=""><a href="/0">132</a></li>
+              <li class=""><a href="/13000">&raquo;</a></li>
+            </ul>
+          </li>
+          <li>
+            <!-- Social media buttons start
+                 render.py overwrites data-href and data-url -->
+            <div class="fb-share-button"
+                 data-href="http://poresopropongo.mx"
+                 data-layout="button">
+            </div>
+
+          </li>
+          <li>
+            <a href="https://twitter.com/share"
+               class="twitter-share-button"
+               data-count="none"
+               data-url="http://poresopropongo.mx"
+               data-text="#YaMeCansé #PorEsoPropongo"
+               data-dnt="true"
+            >Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </li>
+          <!-- Social media buttons end-->
+        </ul>
+      </div><!--/.nav-collapse -->
+
+    </div>
+  </div>
