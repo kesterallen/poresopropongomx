@@ -95,7 +95,7 @@ class Renderer(object):
         if self.view.num_images_display <= 2:
             return ""
 
-        navlinks_html = ['    <ul class="pagination">']
+        navlinks_html = ['    <ul class="pagination pagination-sm">']
 
         for navlink in self.view.navlinks:
             if navlink is None:
