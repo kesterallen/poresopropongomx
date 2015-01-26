@@ -40,8 +40,7 @@
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
           <li>
-           <!-- Social media buttons start
-                 render.py overwrites data-href and data-url -->
+             <!-- FB share button (render.py overwrites data-href): -->
             <div class="fb-share-button"
                  data-href="http://poresopropongo.mx"
                  data-layout="button">
@@ -49,6 +48,7 @@
 
           </li>
           <li>
+             <!-- Tweet button (render.py overwrites data-url): -->
             <a href="https://twitter.com/share"
                class="twitter-share-button"
                data-count="none"
@@ -65,9 +65,9 @@
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>
-            <div class="navlinks"></div> <!-- Overwrite this in render.py, if this is in a dynamic page. -->
+            <div class="navlinks"></div> <!-- render.py will overwrite this, unless this is a static page. -->
           </li>
-          <!-- Social media buttons end-->
+          <li><a href="/"></a></li> <!-- FIXME: Kludge to add space on right side -->
         </ul>
       </div><!--/.nav-collapse -->
 
