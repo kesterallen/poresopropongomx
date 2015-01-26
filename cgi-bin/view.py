@@ -9,7 +9,7 @@ in that directory, e.g. '0001000/0001073.jpg' or '0013000/0013910.jpg'.
 """
 
 import cgi
-#import cgitb
+import cgitb
 import logging
 import os
 import random
@@ -29,7 +29,7 @@ PERMALINK_TEMPLATE = 'http://poresopropongo.mx/%s'
 IMG_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
-IS_TEST = True#False
+IS_TEST = False
 IS_CACHING_ON = False#True
 
 # Relative to /cgi-bin:
@@ -369,7 +369,7 @@ class ViewJumpHandler(ViewGalleryHandler):
 
 def main():
     """Page view entry point."""
-    #cgitb.enable()
+    cgitb.enable()
 
     try:
         # Parse request arguments:
@@ -401,7 +401,7 @@ def main():
         view_handler.get()
     except:
         print "Status: 500"
-        #cgitb.handler()
+        cgitb.handler()
 
 if __name__ == "__main__":
     main()

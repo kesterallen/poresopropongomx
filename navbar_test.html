@@ -2,19 +2,6 @@
     .navbar-fixed-top { min-height: 120px; }
     .navbar-header img { max-height: 120px; }
     body { padding-top: 120px; }
-    /*
-    .navbar-brand {
-        float: none;
-        font-size: 40px;
-        line-height: 40px;
-        max-height: 80px;
-    }
-    .navbar-brand a {
-        padding-right: 400px;
-    }
-    .logo1 { color: #000; background-color: #fff; }
-    .logo2 { color: #fff; background-color: #000; }
-    */
   </style>
 
   <!-- Hook for FB Share button-->
@@ -32,18 +19,11 @@
     <div class="container-fluid">
 
       <div class="navbar-header">
-        <a class="navbar-brand" href="/">
           <a href="/">
             <img class="img-responsive"
                  alt="Ya Me Cansé Por Eso Propongo"
                  src="/logo.png"
             />
-         </a>
-          <!--
-          <span class="logo1">#YaMeCansé</span>
-          <br>
-          <span class="logo2">Por Eso Propongo</span>
-          -->
         </a>
 
         <button type="button"
@@ -78,23 +58,14 @@
             >Tweet</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
           </li>
+          <li><a href="/">Postales enviadas</a></li>
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
           <li><a href="/randcard">Postal al azar</a></li>
           <li><a href="/wordcloud.html">Las propuestas</a></li>
           <li><a href="/about.html">¿Por qué proponer?</a></li>
           <li><a href="/contact.html">Contacto</a></li>
           <li>
-            <div class="navlinks"></div>--> <!-- Overwrite this in render.py, if this is in a dynamic page. -->
-          <!--
-            <ul class="pagination pagination-sm">
-              <li class="active"><a href="/13100">1</a></li>
-              <li class=""><a href="/13000">2</a></li>
-              <li class="disabled"><a href="/#">...</a></li>
-              <li class=""><a href="/100">131</a></li>
-              <li class=""><a href="/0">132</a></li>
-              <li class=""><a href="/13000">&raquo;</a></li>
-            </ul>
-          -->
+            <div class="navlinks"></div> <!-- Overwrite this in render.py, if this is in a dynamic page. -->
           </li>
           <!-- Social media buttons end-->
         </ul>

@@ -4,9 +4,9 @@
 IS_TEST = False
 # Relative to /cgi-bin:
 if IS_TEST:
-    NAVBAR_HTML_FILENAME = "navbar.html"
+    NAVBAR_HTML_FILENAME = "../navbar_test.html"
 else:
-    NAVBAR_HTML_FILENAME = "../navbar.html"
+    NAVBAR_HTML_FILENAME = "../navbar_test.html"
 
 SM_METADATA_TEMPLATE = """
   <!-- Twitter card -->
@@ -38,18 +38,6 @@ PAGE_TEMPLATE = """
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/bootstrap-3.2.0.min.css">
-  <style>
-    body {
-      padding-top: 180px;
-    }
-    .navbar-nav > li > a {
-      padding-top:25px !important;
-      padding-bottom:25px !important;
-    }
-    .navbar {
-      min-height:140px !important;
-    }
-  </style>
   <!-- social media metadata start -->
   %s
   <!-- social media metadata end -->
