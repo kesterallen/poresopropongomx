@@ -186,7 +186,7 @@ class ViewGalleryHandler(object):
 
     def load_navlinks(self):
         """
-        Generate a " < 1 2 3 ... n-2 n-1 n > " type of navlink set. The '1'
+        Generate a " < 1 current n > " type of navlink set. The '1'
         link will go to the oldest set, the n link will go to the newest set.
         The math in the 'href' definition controls this.
 
@@ -199,7 +199,7 @@ class ViewGalleryHandler(object):
         next_offset = self.offset + self.num_images_display
         prev_offset = self.offset - self.num_images_display
 
-        # Make an "More Recent" arrow button if this is not the most recent
+        # Make an "More Recent" (<<) arrow button if this is not the newest
         # page:
         if next_offset <= self.max_good_display_offset:
             self.navlinks.append(
@@ -209,12 +209,14 @@ class ViewGalleryHandler(object):
 
         for ipage in page_indices:
             is_current_page = (self.num_pages - ipage - 1) == self.image_page
-            is_edge_page = ipage in [page_indices[0], page_indices[1],
-                                     page_indices[-2], page_indices[-1],]
+            is_edge_page = ipage in [page_indices[0],
+                                     #page_indices[1],
+                                     #page_indices[-2],
+                                     page_indices[-1],]
             if is_current_page or is_edge_page:
+                href = (self.num_pages - (ipage+1)) * self.num_images_display
                 navlink = {
-                    'href': (self.num_pages - (ipage+1)) * \
-                                self.num_images_display,
+                    'href': href,
                     'text': '%s' % (ipage+1),
                     'active': '',
                 }
@@ -222,14 +224,20 @@ class ViewGalleryHandler(object):
                     navlink['active'] = 'active'
             else:
                 navlink = None
-            # Add the navlink if it isn't a double '...' link
-            if (len(self.navlinks) > 0 and
-                self.navlinks[-1] is None and navlink is None):
-                pass
-            else:
+
+            # Add the navlink if it is a valid page:
+            #
+            if navlink:
                 self.navlinks.append(navlink)
 
-        # Make an "Older Page" arrow button if this is not the most oldest
+            ## Add the navlink if it isn't the second consecutive '...' link
+            #if (len(self.navlinks) > 0 and
+            #    self.navlinks[-1] is None and navlink is None):
+            #    pass
+            #else:
+            #    self.navlinks.append(navlink)
+
+        # Make an "Older Page" (>>) arrow button if this is not the oldest
         # page:
         if prev_offset >= 0:
             self.navlinks.append(

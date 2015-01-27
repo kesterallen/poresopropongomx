@@ -38,17 +38,17 @@
       </div>
 
       <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-left">
+          <!-- FB share button (render.py overwrites data-href): -->
           <li>
-             <!-- FB share button (render.py overwrites data-href): -->
             <div class="fb-share-button"
                  data-href="http://poresopropongo.mx"
                  data-layout="button">
             </div>
-
           </li>
+
+          <!-- Tweet button (render.py overwrites data-url): -->
           <li>
-             <!-- Tweet button (render.py overwrites data-url): -->
             <a href="https://twitter.com/share"
                class="twitter-share-button"
                data-count="none"
@@ -58,6 +58,9 @@
             >Tweet</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
           </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
           <li><a href="/">Postales enviadas</a></li>
           <li><a href="http://postcard.com/join-a-movement/15">Manda tu postal</a></li>
           <li><a href="/randcard">Postal al azar</a></li>

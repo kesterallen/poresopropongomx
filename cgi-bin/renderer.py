@@ -4,9 +4,9 @@
 IS_TEST = False
 # Relative to /cgi-bin:
 if IS_TEST:
-    NAVBAR_HTML_FILENAME = "../navbar_test.html"
+    NAVBAR_HTML_FILENAME = "../navbar.html"
 else:
-    NAVBAR_HTML_FILENAME = "../navbar_test.html"
+    NAVBAR_HTML_FILENAME = "../navbar.html"
 
 SM_METADATA_TEMPLATE = """
   <!-- Twitter card -->
