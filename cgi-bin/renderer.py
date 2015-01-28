@@ -56,6 +56,14 @@ PAGE_TEMPLATE = """
 
 <script src="/jquery-1.11.1.min.js"></script>
 <script src="/bootstrap-3.2.0.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+    $(window).resize(function(){
+      $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+    });
+  });
+</script>
 </body>
 </html>
 """
@@ -111,12 +119,14 @@ class Renderer(object):
 
         with open(NAVBAR_HTML_FILENAME) as nb_file:
             navbar_html = nb_file.read()
+        # TODO: remove these two
         navbar_html = navbar_html.replace(
                           'data-href="http://poresopropongo.mx"',
                           'data-href="%s"' % self.view.permalink)
         navbar_html = navbar_html.replace(
                            'data-url="http://poresopropongo.mx"',
                            'data-url="%s"' % self.view.permalink)
+        # TODO: but leave this
         navbar_html = navbar_html.replace(
                             '<div class="navlinks"></div>',
                             '<li>%s</li>' % navlinks)

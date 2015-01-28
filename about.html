@@ -103,6 +103,14 @@
 </div>
 <script src="/jquery-1.11.1.min.js"></script>
 <script>$(function(){ $("#navbar").load("navbar.html"); });</script>
+<script>
+  $(document).ready(function(){
+    $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+    $(window).resize(function(){
+      $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+    });
+  });
+</script>
 <script src="/bootstrap-3.2.0.min.js"></script>
 </body>
 </html>
