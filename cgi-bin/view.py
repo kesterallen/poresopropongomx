@@ -30,7 +30,7 @@ IMG_URL_TEMPLATE = '/img/%s'
 CARD_URL_TEMPLATE = '/card/%s'
 
 IS_TEST = False
-IS_CACHING_ON = False#True
+IS_CACHING_ON = True#False
 
 # Relative to /cgi-bin:
 if IS_TEST:
@@ -67,8 +67,6 @@ class ViewGalleryHandler(object):
         # Load data. Don't change the order these loads are done in.
         self.load_image_count()
         self.load_indices(num_images_display)
-
-        #import ipdb; ipdb.set_trace()
 
         self.num_pages = int(self.num_images) / int(self.num_images_display)
 
