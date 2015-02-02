@@ -205,30 +205,30 @@ class ViewGalleryHandler(object):
             self.navlinks.append(
                 {'href': next_offset, 'text': '&laquo;', 'active': ''})
 
-#        page_indices = range(self.num_pages)
-#
-#        for ipage in page_indices:
-#            is_current_page = (self.num_pages - ipage - 1) == self.image_page
-#            is_edge_page = ipage in [page_indices[0],
-#                                     #page_indices[1],
-#                                     #page_indices[-2],
-#                                     page_indices[-1],]
-#            if is_current_page or is_edge_page:
-#                href = (self.num_pages - (ipage+1)) * self.num_images_display
-#                navlink = {
-#                    'href': href,
-#                    'text': '%s' % (ipage+1),
-#                    'active': '',
-#                }
-#                if is_current_page:
-#                    navlink['active'] = 'active'
-#            else:
-#                navlink = None
-#
-#            # Add the navlink if it is a valid page:
-#            #
-#            if navlink:
-#                self.navlinks.append(navlink)
+        page_indices = range(self.num_pages)
+
+        for ipage in page_indices:
+            is_current_page = (self.num_pages - ipage - 1) == self.image_page
+            is_edge_page = ipage in [page_indices[0],
+                                     #page_indices[1],
+                                     #page_indices[-2],
+                                     page_indices[-1],]
+            if is_current_page or is_edge_page:
+                href = (self.num_pages - (ipage+1)) * self.num_images_display
+                navlink = {
+                    'href': href,
+                    'text': '%s' % (ipage+1),
+                    'active': '',
+                }
+                if is_current_page:
+                    navlink['active'] = 'active'
+            else:
+                navlink = None
+
+            # Add the navlink if it is a the current page #valid page:
+            #
+            if navlink and is_current_page:
+                self.navlinks.append(navlink)
 
             ## Add the navlink if it isn't the second consecutive '...' link
             #if (len(self.navlinks) > 0 and
