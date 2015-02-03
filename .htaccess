@@ -1,5 +1,7 @@
 RewriteEngine On
+# Don't do anything to requests to cached.
 RewriteRule    ^cached/           - [L]
+# Pass all other requests to view.py with the appropriate arguments:
 RewriteRule    ^img/?$            cgi-bin/view.py?type=img [NC,L]
 RewriteRule    ^img/(\d+)$        cgi-bin/view.py?type=img&offset=$1 [NC,L]
 RewriteRule    ^card/?$           cgi-bin/view.py?type=card [NC,L]
@@ -9,5 +11,16 @@ RewriteRule    ^jump/(\d+)?$      cgi-bin/view.py?type=jump&offset=$1 [NC,L]
 RewriteRule    ^randcard.*$       cgi-bin/view.py?type=randcard [NC,L]
 RewriteRule    ^/?$               cgi-bin/view.py?type=view [NC,L]
 RewriteRule    ^(\d+)$            cgi-bin/view.py?type=view&offset=$1 [NC,L]
+
+# Oh, no, the server fell over! Comment out the above and uncomment the below to switch to static pages:
+#RewriteRule    ^img/?$            cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^img/(\d+)$        cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^card/?$           cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^card/(\d+)$       cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^jump/?$           cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^jump/(\d+)?$      cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^randcard.*$       cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^/?$               cached/ViewGalleryHandler_13200.html  [NC,L]
+#RewriteRule    ^(\d+)$            cached/ViewGalleryHandler_13200.html  [NC,L]
 
 Options +Indexes 

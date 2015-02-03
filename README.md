@@ -1,29 +1,34 @@
 
 
 To deploy new images:
-    A) Rename Dropbox images, make a new image_list and image_count file, and copy them to a staging dir:
+    A) Make new image list/count files and cop them to staging dir:
         cd /home/kester/Dropbox/Mosaic\ PNGs
         find 2* -type f | sort >| image_list.txt
         wc -l image_list.txt | awk '{print $1}' >| image_count.txt
 
-        assert $(cat image_count.txt) == (wc -l image_list.txt)
+        len1=$(cat image_count.txt)
+        len2=$(wc -l image_list.txt | awk '{print $1}')
+        if [ $len1 == $len2 ]; then echo "Good to go"; else echo "STOP STOP STOP $len1 != $len2"; fi
 
         cp image_*.txt /home/kester/Desktop/images_numbered/
+
+    B) Rename Dropbox images, make a new image_list and image_count file, and copy them to a staging dir:
         perl -lane '$src = $_; $dst = sprintf "/home/kester/Desktop/images_numbered/%07d/%010d.jpg", $./1000, $.;  print "cp $src $dst" if !-f $dst ' image_list.txt 
         perl -lane '$src = $_; $dst = sprintf "/home/kester/Desktop/images_numbered/%07d/%010d.jpg", $./1000, $.; system "cp $src $dst" if !-f $dst ' image_list.txt 
 
-
-        Generate new li elements for navbar with:
+    C) Generate new li elements for navbar with, then put that in navbar.html:
             perl -lane '$m = int($_/100); printf qq!              <li><a href="/%s">Galerías %s</a></li>\n!, ($m-$_)*100, $_ for 1..$m' image_count.txt
 
-
-    B) FTP to site:
-        lftp ftp.fatcow.com -e 'mirror --verbose=3 --reverse /home/kester/Desktop/images_numbered/ /images_numbered && exit'
-
-    C) Verify trouble spots are OK:
+    D) Verify trouble spots are OK:
         http://www.poresopropongo.mx/card/7735
         http://www.poresopropongo.mx/card/7421
 
-Deploy html and py files:
+    E) Deploy images, and image_list/image_count files:
+        cd /home/kester/Dropbox/google_appengine/poresopropongomx
+        lftp ftp.fatcow.com -e 'mirror --exclude-glob image_*txt --verbose=3 --reverse /home/kester/Desktop/images_numbered/ /images_numbered && exit'
+        lftp ftp.fatcow.com -e 'mput image_*txt && exit'
 
-    lftp ftp.fatcow.com -e 'mput *.html && mirror --verbose=3 --reverse /home/kester/Dropbox/google_appengine/poresopropongomx/cgi-bin/ /cgi-bin && exit'
+    F) If necessary, deploy html and py files:
+        cd /home/kester/Dropbox/google_appengine/poresopropongomx
+        lftp ftp.fatcow.com -e 'mirror --verbose=3 --reverse /home/kester/Dropbox/google_appengine/poresopropongomx/cgi-bin/ /cgi-bin && exit'
+        lftp ftp.fatcow.com -e 'mput *.html && exit'

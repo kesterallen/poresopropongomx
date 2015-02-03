@@ -107,10 +107,9 @@ class Renderer(object):
 
     def render_navbar(self):
         """
-        This is a kludgy way to get the navbar all in one file which
-        is used by the static pages and this class. This method does replaces
-        on the FB and Twitter button included URLs, and renders the navlinks
-        if applicable.
+        This is a kludgy way to get the navbar all in one file which is used by
+        the static pages and this class. This method renders the navlinks if
+        applicable.
         """
         if self.view.do_render_navlinks:
             navlinks = self.render_navlinks()
@@ -119,14 +118,7 @@ class Renderer(object):
 
         with open(NAVBAR_HTML_FILENAME) as nb_file:
             navbar_html = nb_file.read()
-        # TODO: remove these two
-        navbar_html = navbar_html.replace(
-                          'data-href="http://poresopropongo.mx"',
-                          'data-href="%s"' % self.view.permalink)
-        navbar_html = navbar_html.replace(
-                           'data-url="http://poresopropongo.mx"',
-                           'data-url="%s"' % self.view.permalink)
-        # TODO: but leave this
+
         navbar_html = navbar_html.replace(
                             '<div class="navlinks"></div>',
                             '<li>%s</li>' % navlinks)
