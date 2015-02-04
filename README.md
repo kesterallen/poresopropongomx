@@ -16,8 +16,8 @@ To deploy new images:
         perl -lane '$src = $_; $dst = sprintf "/home/kester/Desktop/images_numbered/%07d/%010d.jpg", $./1000, $.;  print "cp $src $dst" if !-f $dst ' image_list.txt 
         perl -lane '$src = $_; $dst = sprintf "/home/kester/Desktop/images_numbered/%07d/%010d.jpg", $./1000, $.; system "cp $src $dst" if !-f $dst ' image_list.txt 
 
-    C) Generate new li elements for navbar with, then put that in navbar.html:
-            perl -lane '$m = int($_/100); printf qq!              <li><a href="/%s">Galerías %s</a></li>\n!, ($m-$_)*100, $_ for 1..$m' image_count.txt
+    C) Generate new li elements for navbar with, then put that in galleries.html:
+            perl -lane '$m = int($_/100); printf qq!              <li><a href="/%s">Galerías %s</a></li>\n!, ($m-$_)*100, $_ for 1..$m' image_count.txt >| galleries.html
 
     D) Verify trouble spots are OK:
         http://www.poresopropongo.mx/card/7735
