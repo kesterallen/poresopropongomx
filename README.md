@@ -17,18 +17,20 @@ To deploy new images:
         perl -lane '$src = $_; $dst = sprintf "/home/kester/Desktop/images_numbered/%07d/%010d.jpg", $./1000, $.; system "cp $src $dst" if !-f $dst ' image_list.txt 
 
     C) Generate new li elements for navbar with, then put that in galleries.html:
-            perl -lane '$m = int($_/100); printf qq!              <li><a href="/%s">Galerías %s</a></li>\n!, ($m-$_)*100, $_ for 1..$m' image_count.txt >| galleries.html
+        cd /home/kester/Dropbox/google_appengine/poresopropongomx
+        perl -lane '$m = int($_/100); printf qq!              <li><a href="/%s">Galerías %s</a></li>\n!, ($m-$_)*100, $_ for 1..$m' /home/kester/Desktop/images_numbered/image_count.txt >| galleries.html
+        cat navbar_head.html galleries.html navbar_tail.html >| navbar.html
 
-    D) Verify trouble spots are OK:
-        http://www.poresopropongo.mx/card/7735
-        http://www.poresopropongo.mx/card/7421
-
-    E) Deploy images, and image_list/image_count files:
+    D) Deploy images, and image_list/image_count files:
         cd /home/kester/Dropbox/google_appengine/poresopropongomx
         lftp ftp.fatcow.com -e 'mirror --exclude-glob image_*txt --verbose=3 --reverse /home/kester/Desktop/images_numbered/ /images_numbered && exit'
         lftp ftp.fatcow.com -e 'mput image_*txt && exit'
 
+    E) Verify trouble spots are OK:
+        http://www.poresopropongo.mx/card/7735
+        http://www.poresopropongo.mx/card/7421
+
     F) If necessary, deploy html and py files:
         cd /home/kester/Dropbox/google_appengine/poresopropongomx
-        lftp ftp.fatcow.com -e 'mirror --verbose=3 --reverse /home/kester/Dropbox/google_appengine/poresopropongomx/cgi-bin/ /cgi-bin && exit'
         lftp ftp.fatcow.com -e 'mput *.html && exit'
+        lftp ftp.fatcow.com -e 'mirror --verbose=3 --reverse /home/kester/Dropbox/google_appengine/poresopropongomx/cgi-bin/ /cgi-bin && exit'
