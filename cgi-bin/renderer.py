@@ -54,6 +54,12 @@ PAGE_TEMPLATE = """
   </div>
 </div>
 
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted">Site design by <a href="http://twitter.com/kesterallen" rel="author">Kester Allen</a>.</p>
+  </div>
+</footer>
+
 <script src="/jquery-1.11.1.min.js"></script>
 <script src="/bootstrap-3.2.0.min.js"></script>
 <script>
