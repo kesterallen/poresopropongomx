@@ -145,7 +145,7 @@ class Renderer(object):
             postcard = (
                 '    <div class="%s" style="background-color:black;">\n'
                 '        <a href="%s" >\n'
-                '          <img src="%s" class="thumbnail img-responsive">\n'
+                '          <img src="%s" class="thumbnail img-responsive center-block">\n'
                 '        </a>\n'
                 '    </div>') % (self.div_class,
                                  postcard_image['href'],
