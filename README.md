@@ -8,7 +8,7 @@ To deploy new images:
 
         len1=$(cat image_count.txt)
         len2=$(wc -l image_list.txt | awk '{print $1}')
-        if [ $len1 == $len2 ]; then echo "Good to go"; else echo "STOP STOP STOP $len1 != $len2"; fi
+        if [ $len1 == $len2 ]; then echo "Good to go: $len1 images"; else echo "STOP STOP STOP $len1 != $len2"; fi
 
         cp image_*.txt /home/kester/Desktop/images_numbered/
 

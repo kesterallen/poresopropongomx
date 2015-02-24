@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/bootstrap-3.2.0.min.css">
+  <title>Por Eso Propongo</title>
+</head>
+<body role="document">
+
+<div class="container-fluid">
+  <div id="navbar"></div>
+
+  <img class="img-responsive" src="banner_thin.jpg"/>
+
+  <p>El 3 de marzo a partir de las 12pm entregaremos y presentaremos las postales en un evento abierto al público. Aparta la fecha.</p>
+
+  <p>A partir de las miles de propuestas recibidas, una comisión de ciudadanos está elaborando un documento que sintetiza y expone las principales inquietudes e ideas ciudadanas, el cual se entregará junto con las postales. Lo publicaremos aquí en los próximos días.</p>
+
+  <img class="img-responsive" src="banner_thin.jpg"/>
+</div>
+<script src="/jquery-1.11.1.min.js"></script>
+<script>$(function(){ $("#navbar").load("navbar.html"); });</script>
+<script>
+  $(document).ready(function(){
+    $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+    $(window).resize(function(){
+      $(document.body).css('padding-top', $('#topnavbar').height() + 10);
+    });
+  });
+</script>
+<script src="/bootstrap-3.2.0.min.js"></script>
+</body>
+</html>
