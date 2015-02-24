@@ -1,7 +1,8 @@
 
 
 To deploy new images:
-    A) Make new image list/count files and cop them to staging dir:
+
+    A) Make new image list/count files and copy them to staging dir:
         cd /home/kester/Dropbox/Mosaic\ PNGs
         find 2* -type f | sort >| image_list.txt
         wc -l image_list.txt | awk '{print $1}' >| image_count.txt
