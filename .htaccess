@@ -9,7 +9,8 @@ RewriteRule    ^card/(\d+)$       cgi-bin/view.py?type=card&offset=$1 [NC,L]
 RewriteRule    ^jump/?$           cgi-bin/view.py?type=jump [NC,L]
 RewriteRule    ^jump/(\d+)?$      cgi-bin/view.py?type=jump&offset=$1 [NC,L]
 RewriteRule    ^randcard.*$       cgi-bin/view.py?type=randcard [NC,L]
-RewriteRule    ^/?$               cgi-bin/view.py?type=view [NC,L]
+#RewriteRule    ^/?$               cgi-bin/view.py?type=view [NC,L]
+RewriteRule    ^/?$               whatsnext.html [NC,L]
 RewriteRule    ^(\d+)$            cgi-bin/view.py?type=view&offset=$1 [NC,L]
 
 # Oh, no, the server fell over! Comment out the above and uncomment the below to switch to static pages:
