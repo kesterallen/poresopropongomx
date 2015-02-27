@@ -107,14 +107,21 @@ table.colores td {
 
 <body>
 
+  <h2>
+    <a href="/">
+      <img class="img-responsive"
+           alt="Ya Me Cansé Por Eso Propongo"
+           src="/logo.png"
+           width="250px"/>
+    </a>
+    Las propuestas más frecuentes
+  </h2>
+
   <div class="texto-wrapper-largo">
     <span style="font-size: 20px;">Haz click en la imagen para acercarla o alejarla.</span>
-    <a href="/">Ya Me Cansé Por Eso Propongo </a>
   </div>
 
-
 <script>
-
 
 var margin = 10,
     diameter = 750;
@@ -219,7 +226,21 @@ d3.select(self.frameElement).style("height", diameter + "px");
 
 </script>
 
-<p><small>Elaborado por Segasi con <a href="http://d3js.org">d3.js</a></small></p>
+<small>
+<p>
+Esta visualización muestra las propuestas que aparecen más frecuentemente en
+las postales creadas entre el 14 de noviembre de 2014 y el 22 de febrero de
+2015. Para identificar los principales temas, utilizamos algoritmos de
+Procesamiento del Lenguaje Natural (PLN). Estos procesos agrupan propuestas
+similares y extraen frases que sintetizan cada grupo de propuestas. El tamaño
+de cada círculo representa el porcentaje de postales que refieren esa
+propuesta.
+</p>
+<p>
+Visualización elaborada por Segasi con <a href="http://d3js.org">d3.js</a>. PLN cortesía de Marco Morales. 
+</p>
+</small>
+
 
 </body>
 </html>
