@@ -1,0 +1,133 @@
+{
+ "name": "Propuestas",
+   "color":"#999999",
+ "children": [
+  {
+   "name": "Clase política",
+   "color":"#587498",
+   "children": [
+    {"name": "Reducir financiamiento a partidos", 
+	 "name1": "Reducir financiamiento a partidos y gastos de campaña", 
+	 "frecuencia" : 624, 
+	 "total" : 6131},
+			 
+ 	{"name": "Renuncia de EPN y gabinete", 
+	 "name1": "Que renuncie EPN y su gabinete", 
+	 "frecuencia" : 348, 
+	 "total" : 6131},
+	 
+ 	{"name": "Reducir salario y prestaciones de funcionarios públicos", 
+	 "name1": "Reducir salario", 
+	 "frecuencia" : 1361, 
+	 "total" : 6131}
+
+   ]
+  },
+  {
+   "name": "Cohesión social",
+   "color":"#E86850",
+   "children": [
+	
+	{"name": "Mejor educación, cultura y salud para los mexicanos", 
+	 "name1": "Mejorar la educación de los mexicanos", 
+	 "frecuencia" : 1401, 
+	 "total" : 6131}, 
+	 
+
+	{"name": "Respetar der. hum. ", 
+	 "name1": "Que se respeten derechos humanos ", 
+	 "frecuencia" : 166, 
+	 "total" : 6131},		 				 					   
+ 	
+ 	{"name": "Aumentar salario mínimo", 
+	 "name1": "Aumentar el salario mín.", 
+	 "frecuencia" : 233, "total" : 6131}			 
+
+    
+   ]
+  },
+  {
+   "name": "Impunidad",
+   "color":"#F9E559",
+   "children": [
+    {"name": "Justicia por Ayotzinapa", 
+	 "name1": "Justicia penal a los responsables de caso Ayotzinapa", 
+	 "frecuencia" : 100, 
+	 "total" : 6131},
+
+	{"name": "Eliminar fuero y privilegios a políticos", 
+	 "name1": "Eliminar privilegios de clase política", 
+	 "frecuencia" : 334, "total" : 6131},
+	
+	{"name": "Acabar con impunidad, corrupción, injusticia y violencia", 
+	 "name1": "Basta a impunidad, corrupción, injusticia y violencia", 
+	 "frecuencia" : 415, 
+	 "total" : 6131},
+
+ 	{"name": "Cumplir con leyes", 
+	 "name1": "Cumplir con objetivos y obligaciones en las leyes", 
+	 "frecuencia" : 138, 
+	 "total" : 6131}	   
+   ]
+  },
+  {
+   "name": "Justicia",
+   "color":"#218C8D",
+   "children": [
+    {"name": "Que quienes más ganan paguen más impuestos", 
+	 "name1": "Que empresas, trasnacionales y quienes más ganan paguen más impuestos", 
+	 "frecuencia" : 212, 
+	 "total" : 6131},     
+
+ 	{"name": "Banco de ADN", 
+	 "name1": "Crear banco de ADN para muertos y desaparecidos", 
+	 "frecuencia" : 63, 
+	 "total" : 6131},
+
+ 	{"name": "Justicia a presos por libertad expresión", 
+	 "name1": "Justicia a presos por libertad expresión", 
+	 "frecuencia" : 86, 
+	 "total" : 6131},
+
+ 	{"name": "Mejorar policía y seguridad", 
+	 "name1": "Mejorar policía y seguridad", 
+	 "frecuencia" : 95, 
+	 "total" : 6131},
+
+ 	{"name": "Acabar violencia de género", 
+	 "name1": "Eliminar o reducir violencia contra mujeres", 
+	 "frecuencia" : 54, "total" : 6131}			 	 	
+   ]
+  },
+  {
+   "name": "Part. ciudadana",
+   "color":"#9BCA3E",
+   "children": [
+    {"name": "Crear órgano ciudadano anticorrupción", 
+  	 "name1": "Crear órgano ciudadano anticorrupción", 
+  	 "frecuencia" : 138, 
+  	 "total" : 6131},
+  	 
+ 	{"name": "Democracia participativa", 
+	 "name1": "Impulsar verdadera democracia participativa", 
+	 "frecuencia" : 88, 
+	 "total" : 6131},
+
+ 	{"name": "Segunda vuelta elec.", 
+	 "name1": "Segunda vuelta electoral", 
+	 "frecuencia" : 41, 
+	 "total" : 6131},
+
+ 	{"name": "Reducir o eliminar legisladores plurinominales", 
+	 "name1": "Reducir o eliminar legisladores plurinominales", 
+	 "frecuencia" : 144, 
+	 "total" : 6131},
+	 
+ 	{"name": "Crear comisión autónoma para regular al gobierno", 
+	 "name1": "Crear comisiones autónomas ciudadanas independientes para regular al gobierno (rendicion de cuentas, fiscalización, investigación)", 
+	 "frecuencia" : 90, 
+	 "total" : 6131}			 
+   ]
+  } 
+ ]
+}
