@@ -36,9 +36,10 @@ To deploy new images:
         http://www.poresopropongo.mx/card/7735
         http://www.poresopropongo.mx/card/7421
 
-Update FB cache at https://developers.facebook.com/tools/debug/og/object/
+    Update FB cache at https://developers.facebook.com/tools/debug/og/object/
 
 To just deploy new HTML and/or press releases:
+
         cd /home/kester/Dropbox/google_appengine/poresopropongomx/press
         lftp ftp.fatcow.com -e 'cd press && mput *'
 
